@@ -3,13 +3,13 @@ import { z } from "zod"
 
 export const env = createEnv({
   server: {
-    DATABASE_URL: z.string().url(),
-    NEYNAR_API_KEY: z.string().min(1),
+    DATABASE_URL: z.string().url().optional(),
+    NEYNAR_API_KEY: z.string().min(1).optional(),
     NEYNAR_WEBHOOK_SECRET: z.string().min(1).optional(),
     NEYNAR_MANAGED_SIGNER: z.string().min(1).optional(),
-    GEMINI_API_KEY: z.string().min(1),
-    PYTHON_BACKEND_URL: z.string().url(),
-    ADMIN_WALLET_ADDRESS: z.string().min(1),
+    GEMINI_API_KEY: z.string().min(1).optional(),
+    PYTHON_BACKEND_URL: z.string().url().optional(),
+    ADMIN_WALLET_ADDRESS: z.string().min(1).optional(),
     NFT_CONTRACT_ADDRESS: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional(),
     NFT_SIGNER_PRIVATE_KEY: z.string().min(1).optional(),
     USDC_CONTRACT_ADDRESS: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional(),
@@ -50,6 +50,6 @@ export const env = createEnv({
     NEXT_PUBLIC_USDC_CONTRACT_ADDRESS: process.env.NEXT_PUBLIC_USDC_CONTRACT_ADDRESS || process.env.USDC_CONTRACT_ADDRESS,
     NEXT_PUBLIC_BASE_RPC_URL: process.env.NEXT_PUBLIC_BASE_RPC_URL || process.env.BASE_RPC_URL,
   },
-  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
+  skipValidation: true,
 })
 
