@@ -20,7 +20,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: z.string().url(),
     NEXT_PUBLIC_APP_NAME: z.string().min(1),
     NEXT_PUBLIC_CHAIN_ID: z.string(),
-    NEXT_PUBLIC_X402_TOKEN_CONTRACT: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+    NEXT_PUBLIC_X402_TOKEN_CONTRACT: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional(),
     NEXT_PUBLIC_GENERATION_PRICE: z.string(),
     NEXT_PUBLIC_HOSTNAME: z.string().min(1),
     NEXT_PUBLIC_NEYNAR_CLIENT_ID: z.string().min(1).optional(),
@@ -48,10 +48,10 @@ export const env = createEnv({
     NEXT_PUBLIC_GENERATION_PRICE: process.env.NEXT_PUBLIC_GENERATION_PRICE,
     NEXT_PUBLIC_HOSTNAME: process.env.NEXT_PUBLIC_HOSTNAME,
     NEXT_PUBLIC_NEYNAR_CLIENT_ID: process.env.NEXT_PUBLIC_NEYNAR_CLIENT_ID,
-    NEXT_PUBLIC_NFT_CONTRACT_ADDRESS: process.env.NFT_CONTRACT_ADDRESS,
-    NEXT_PUBLIC_USDC_CONTRACT_ADDRESS: process.env.USDC_CONTRACT_ADDRESS,
+    NEXT_PUBLIC_NFT_CONTRACT_ADDRESS: process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS || process.env.NFT_CONTRACT_ADDRESS,
+    NEXT_PUBLIC_USDC_CONTRACT_ADDRESS: process.env.NEXT_PUBLIC_USDC_CONTRACT_ADDRESS || process.env.USDC_CONTRACT_ADDRESS,
     NEXT_PUBLIC_BASE_RPC_URL: process.env.NEXT_PUBLIC_BASE_RPC_URL || process.env.BASE_RPC_URL,
   },
-  skipValidation: !!process.env.SKIP_ENV_VALIDATION || process.env.NODE_ENV === 'development',
+  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 })
 
