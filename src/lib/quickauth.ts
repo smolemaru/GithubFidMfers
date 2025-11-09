@@ -71,7 +71,6 @@ export async function getUserFromRequest(request: NextRequest) {
       where: { fid: parseInt(fid) },
       create: {
         fid: parseInt(fid),
-        generationsLeft: 1,
       },
       update: {},
     })
