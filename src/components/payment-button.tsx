@@ -69,20 +69,20 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
         }
       }
 
-      // x402 token has 18 decimals (standard ERC20)
-      const amountInX402 = parseUnits(env.NEXT_PUBLIC_GENERATION_PRICE, 18)
+      // USDC has 6 decimals
+      const amountInUSDC = parseUnits(env.NEXT_PUBLIC_GENERATION_PRICE, 6)
 
       // ERC20 transfer function signature
       const transferData = `0xa9059cbb${
         env.ADMIN_WALLET_ADDRESS.slice(2).padStart(64, '0')
-      }${amountInX402.toString(16).padStart(64, '0')}`
+      }${amountInUSDC.toString(16).padStart(64, '0')}`
 
-      // Send x402 token transfer transaction
+      // Send USDC transfer transaction
       const txHash = await window.ethereum.request({
         method: 'eth_sendTransaction',
         params: [{
           from: userAddress,
-          to: env.NEXT_PUBLIC_X402_TOKEN_CONTRACT,
+          to: env.NEXT_PUBLIC_USDC_CONTRACT_ADDRESS!,
           data: transferData,
           value: '0x0',
         }],
@@ -130,7 +130,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
       ) : (
         <>
           <Wallet className="w-5 h-5" />
-          Pay {env.NEXT_PUBLIC_GENERATION_PRICE} x402
+          Pay {env.NEXT_PUBLIC_GENERATION_PRICE} USDC
         </>
       )}
     </button>
