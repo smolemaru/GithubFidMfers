@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       `https://api.neynar.com/v2/farcaster/user/bulk?fids=${targetFid}`,
       {
         headers: {
-          'api_key': env.NEYNAR_API_KEY,
+          'api_key': env.NEYNAR_API_KEY || '',
         },
       }
     )
