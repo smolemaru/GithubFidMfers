@@ -115,15 +115,10 @@ async function handleUserEvent(data: NeynarWebhookPayload['data']) {
       where: { fid },
       update: {
         username: username || `!${fid}`,
-        custodyAddress: custody_address,
-        verifiedAddresses: verifications || [],
       },
       create: {
         fid,
         username: username || `!${fid}`,
-        custodyAddress: custody_address,
-        verifiedAddresses: verifications || [],
-        generationsLeft: 0, // Start with 0, they need to pay
       },
     })
 
