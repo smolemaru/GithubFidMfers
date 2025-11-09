@@ -74,7 +74,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
 
       // ERC20 transfer function signature
       const transferData = `0xa9059cbb${
-        env.ADMIN_WALLET_ADDRESS.slice(2).padStart(64, '0')
+        env.ADMIN_WALLET_ADDRESS?.slice(2).padStart(64, '0') || '0'.repeat(64)
       }${amountInUSDC.toString(16).padStart(64, '0')}`
 
       // Send USDC transfer transaction

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       where: { fid: parseInt(fid) },
     })
 
-    if (!user || user.primaryAddress?.toLowerCase() !== env.ADMIN_WALLET_ADDRESS.toLowerCase()) {
+    if (!user || !env.ADMIN_WALLET_ADDRESS || user.primaryAddress?.toLowerCase() !== env.ADMIN_WALLET_ADDRESS.toLowerCase()) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

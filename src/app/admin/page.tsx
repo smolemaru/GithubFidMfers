@@ -28,7 +28,7 @@ export default function AdminPage() {
         if (response.ok) {
           const user = await response.json()
           // Check if user's primary address matches admin wallet
-          if (user.primaryAddress?.toLowerCase() === env.ADMIN_WALLET_ADDRESS.toLowerCase()) {
+          if (env.ADMIN_WALLET_ADDRESS && user.primaryAddress?.toLowerCase() === env.ADMIN_WALLET_ADDRESS.toLowerCase()) {
             setIsAdmin(true)
           }
         }
