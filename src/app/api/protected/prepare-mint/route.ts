@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     
     try {
       // Fetch user's Neynar score
-      const {users} = await neynarClient.fetchBulkUsers({ fids: [user.fid] })
+      const {users} = await neynarClient.fetchBulkUsers([user.fid])
       const neynarUser = users[0]
       const userScore = neynarUser?.power_badge ? 1.0 : (neynarUser?.follower_count || 0) / 1000 // Rough score calculation
       
