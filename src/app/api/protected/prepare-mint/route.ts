@@ -116,18 +116,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if generation is completed
-    if (generation.status !== 'COMPLETED') {
+    // Check if already minted (check tokenId first)
+    if (generation.tokenId) {
       return NextResponse.json(
-        { error: 'Generation not completed yet' },
+        { error: 'Already minted' },
         { status: 400 }
       )
     }
 
-    // Check if already minted
-    if (generation.status === 'MINTED' || generation.tokenId) {
+    // Check if generation is completed
+    if (generation.status !== 'COMPLETED') {
       return NextResponse.json(
-        { error: 'Already minted' },
+        { error: 'Generation not completed yet' },
         { status: 400 }
       )
     }
