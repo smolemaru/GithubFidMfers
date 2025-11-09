@@ -44,7 +44,6 @@ export function ShareDialog({
       toast({
         title: 'Error',
         description: 'Failed to copy link',
-        variant: 'destructive',
       })
     }
   }
