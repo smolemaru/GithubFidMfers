@@ -37,7 +37,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
         method: 'eth_chainId',
       }) as string
 
-      const baseChainId = `0x${parseInt(env.NEXT_PUBLIC_CHAIN_ID).toString(16)}`
+      const baseChainId = `0x${parseInt(env.NEXT_PUBLIC_CHAIN_ID || '8453').toString(16)}`
       
       if (chainId !== baseChainId) {
         // Switch to Base network
@@ -70,7 +70,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
       }
 
       // USDC has 6 decimals
-      const amountInUSDC = parseUnits(env.NEXT_PUBLIC_GENERATION_PRICE, 6)
+      const amountInUSDC = parseUnits(env.NEXT_PUBLIC_GENERATION_PRICE || '0.99', 6)
 
       // ERC20 transfer function signature
       const transferData = `0xa9059cbb${
@@ -99,7 +99,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
         },
         body: JSON.stringify({
           txHash,
-          amount: env.NEXT_PUBLIC_GENERATION_PRICE,
+          amount: env.NEXT_PUBLIC_GENERATION_PRICE || '0.99',
         }),
       })
 

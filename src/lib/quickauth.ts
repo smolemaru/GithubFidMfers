@@ -31,7 +31,7 @@ export async function verifyQuickAuthToken(token: string) {
     }
     
     // Check audience (should match your domain)
-    if (payload.aud !== env.NEXT_PUBLIC_HOSTNAME) {
+    if (env.NEXT_PUBLIC_HOSTNAME && payload.aud !== env.NEXT_PUBLIC_HOSTNAME) {
       return { fid: null, error: 'Invalid audience' }
     }
     

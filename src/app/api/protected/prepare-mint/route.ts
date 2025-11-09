@@ -180,8 +180,8 @@ export async function POST(request: NextRequest) {
       signature,
       tokenId: user.fid,
       ipfsURI: metadataUri,
-      contractAddress: env.NFT_CONTRACT_ADDRESS,
-      usdcAddress: env.USDC_CONTRACT_ADDRESS,
+      contractAddress: env.NFT_CONTRACT_ADDRESS || '',
+      usdcAddress: env.USDC_CONTRACT_ADDRESS || '',
       mintCost: '990000', // 0.99 USDC (6 decimals)
     })
   } catch (error) {
