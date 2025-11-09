@@ -141,15 +141,6 @@ function dispatch(action: Action) {
   })
 }
 
-interface Toast {
-  id: string
-  title?: React.ReactNode
-  description?: React.ReactNode
-  action?: ToastActionElement
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
-}
-
 function toast({ ...props }: Omit<ToasterToast, "id">) {
   const id = genId()
 
