@@ -21,8 +21,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <NeynarContextProvider
       settings={{
         clientId: process.env.NEXT_PUBLIC_NEYNAR_CLIENT_ID || '',
-        defaultChain: 8453, // Base mainnet
-        evmProviderUrl: process.env.NEXT_PUBLIC_BASE_RPC_URL,
       }}
     >
       <QueryClientProvider client={queryClient}>
