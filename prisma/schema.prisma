@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  fid            Int      @unique
+  username       String?
+  displayName    String?
+  pfpUrl         String?
+  bio            String?
+  primaryAddress String?
+  referralCode   String   @unique @default(cuid())
+  referredBy     String?
+  referralCount  Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  generations  Generation[]
+  votes        Vote[]
+  payments     Payment[]
+  socialShares SocialShare[]
+
+  @@index([fid])
+  @@index([referralCode])
+}
+
+model Generation {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  fid      Int
+  imageUrl String
+  prompt   String           @db.Text
+  status   GenerationStatus @default(PENDING)
+  attempt  Int              @default(1)
+
+  // User profile data at time of generation
+  userPfpUrl    String?
+  userBio       String?
+  userFollowers Int?
+  userVerified  Boolean @default(false)
+
+  // Gallery
+  inGallery      Boolean @default(false)
+  voteCount      Int     @default(0)
+  selectedFor900 Boolean @default(false)
+
+  // NFT fields
+  tokenId         Int?      @unique
+  ipfsImageUri    String?
+  ipfsMetadataUri String?
+  txHash          String?
+  mintedAt        DateTime?
+  updateCount     Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  votes   Vote[]
+  payment Payment?
+
+  @@index([userId])
+  @@index([fid])
+  @@index([inGallery, voteCount])
+  @@index([selectedFor900])
+  @@index([tokenId])
+}
+
+enum GenerationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  MINTED
+}
+
+model Payment {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  generationId String?     @unique
+  generation   Generation? @relation(fields: [generationId], references: [id])
+
+  amount  String // USDC amount in decimal string
+  txHash  String         @unique
+  status  PaymentStatus  @default(PENDING)
+  purpose PaymentPurpose @default(MINT)
+
+  // Allows 2 generations
+  generationsUsed Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([txHash])
+  @@index([status])
+  @@index([purpose])
+}
+
+enum PaymentStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+enum PaymentPurpose {
+  MINT
+  UPDATE
+}
+
+model Vote {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  generationId String
+  generation   Generation @relation(fields: [generationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, generationId])
+  @@index([userId])
+  @@index([generationId])
+}
+
+model SocialShare {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  generationId  String
+  platform      SocialPlatform
+  pointsAwarded Boolean        @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, generationId, platform])
+  @@index([userId])
+  @@index([generationId])
+}
+
+enum SocialPlatform {
+  FARCASTER
+  X
+}

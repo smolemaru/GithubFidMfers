@@ -1,0 +1,156 @@
+// Updated Prisma Schema for NFT Minting + Referrals
+// Replace your existing schema.prisma with this
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String       @id @default(cuid())
+  fid              Int          @unique
+  username         String?
+  displayName      String?
+  pfpUrl           String?
+  bio              String?
+  primaryAddress   String?
+  
+  // Referral System
+  referralCode     String       @unique @default(cuid())
+  referredBy       String?      // Another user's referral code
+  referralCount    Int          @default(0)
+  
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  
+  generations      Generation[]
+  votes            Vote[]
+  payments         Payment[]
+  socialShares     SocialShare[]
+  
+  @@index([fid])
+  @@index([referralCode])
+  @@index([primaryAddress])
+}
+
+model Generation {
+  id               String       @id @default(cuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  fid              Int          @unique // ONE generation per FID
+  imageUrl         String       // Regular storage URL
+  ipfsImageUrl     String?      // IPFS CID for image
+  ipfsMetadataUrl  String?      // IPFS CID for metadata JSON
+  prompt           String       @db.Text
+  status           GenerationStatus @default(PENDING)
+  
+  // NFT Data
+  minted           Boolean      @default(false)
+  tokenId          Int?         @unique
+  mintTxHash       String?      @unique
+  ownerAddress     String?
+  
+  // User profile data at time of generation
+  userPfpUrl       String?
+  userBio          String?      @db.Text
+  userFollowers    Int?
+  userVerified     Boolean      @default(false)
+  
+  // Gallery & Community Voting
+  inGallery        Boolean      @default(true) // Auto-add to gallery after mint
+  voteCount        Int          @default(0)
+  selectedFor900   Boolean      @default(false) // Admin selects top 900
+  
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  
+  votes            Vote[]
+  payment          Payment?
+  
+  @@index([userId])
+  @@index([fid])
+  @@index([tokenId])
+  @@index([minted])
+  @@index([inGallery, voteCount])
+  @@index([selectedFor900])
+  @@index([ownerAddress])
+}
+
+enum GenerationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model Payment {
+  id               String       @id @default(cuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  generationId     String       @unique
+  generation       Generation   @relation(fields: [generationId], references: [id])
+  
+  amount           String       // "0.99" USDC
+  txHash           String       @unique
+  status           PaymentStatus @default(PENDING)
+  
+  // Payment now includes NFT mint
+  includesMint     Boolean      @default(true)
+  
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  
+  @@index([userId])
+  @@index([txHash])
+  @@index([status])
+}
+
+enum PaymentStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+model Vote {
+  id               String       @id @default(cuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  generationId     String
+  generation       Generation   @relation(fields: [generationId], references: [id], onDelete: Cascade)
+  
+  createdAt        DateTime     @default(now())
+  
+  @@unique([userId, generationId])
+  @@index([userId])
+  @@index([generationId])
+}
+
+model SocialShare {
+  id               String       @id @default(cuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  generationId     String
+  platform         SocialPlatform
+  shareText        String?      @db.Text
+  pointsAwarded    Boolean      @default(false)
+  
+  createdAt        DateTime     @default(now())
+  
+  @@unique([userId, generationId, platform])
+  @@index([userId])
+  @@index([generationId])
+}
+
+enum SocialPlatform {
+  FARCASTER
+  X
+}
+
