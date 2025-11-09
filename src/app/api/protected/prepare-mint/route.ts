@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if generation is completed
-    if (generation.status !== 'completed') {
+    if (generation.status !== 'COMPLETED') {
       return NextResponse.json(
         { error: 'Generation not completed yet' },
         { status: 400 }
