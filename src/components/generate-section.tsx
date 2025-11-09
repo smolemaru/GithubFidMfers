@@ -15,6 +15,7 @@ interface UserProfile {
   pfpUrl: string
   bio: string
   displayName: string
+  referralCode: string
 }
 
 export function GenerateSection() {
@@ -132,8 +133,11 @@ export function GenerateSection() {
             </div>
           ) : generationsLeft > 0 ? (
             <div className="space-y-6">
-              {currentGeneration && (
-                <GenerationResult generation={currentGeneration} />
+              {currentGeneration && userProfile && (
+                <GenerationResult 
+                  generation={currentGeneration} 
+                  referralCode={userProfile.referralCode}
+                />
               )}
               
               <button
