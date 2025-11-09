@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
       data: {
         ipfsMetadataUri: metadataUri,
         tokenId: user.fid,
-        status: 'pending', // Set to pending until blockchain confirmation
+        status: 'PENDING', // Set to pending until blockchain confirmation
       },
     })
 
