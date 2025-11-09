@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     const updatedGeneration = await db.generation.update({
       where: { id: generationId },
       data: {
-        status: 'minted',
+        status: 'MINTED',
         txHash: txHash,
         mintedAt: new Date(),
         inGallery: true, // Automatically add to gallery after minting

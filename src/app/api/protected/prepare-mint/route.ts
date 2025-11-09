@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if already minted
-    if (generation.status === 'minted' || generation.tokenId) {
+    if (generation.status === 'MINTED' || generation.tokenId) {
       return NextResponse.json(
         { error: 'Already minted' },
         { status: 400 }
