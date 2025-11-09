@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       fid: user.fid,
       username: user.username || null,
-      displayName: user.display_name || null,
+      displayName: user.displayName || null,
       pfpUrl: user.pfpUrl,
       bio: user.bio,
       primaryAddress: user.primaryAddress,
