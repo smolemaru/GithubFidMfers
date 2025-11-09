@@ -15,7 +15,7 @@ import base64
 from typing import Optional
 import time
 
-app = FastAPI(title="VibeMfers Generation API")
+app = FastAPI(title="FIDMfers Generation API")
 
 # CORS middleware
 app.add_middleware(
@@ -68,7 +68,22 @@ def download_image(url: str) -> Image.Image:
 
 def load_templates() -> list[Image.Image]:
     """Load template images."""
-    template_dir = os.path.join(os.path.dirname(__file__), "..", "templates")
+    # Try multiple paths for templates
+    possible_paths = [
+        os.path.join(os.path.dirname(__file__), "..", "public", "templates"),  # From python-backend/
+        os.path.join(os.path.dirname(__file__), "..", "templates"),  # Alternative
+        os.path.join(os.path.dirname(__file__), "templates"),  # In python-backend/
+    ]
+    
+    template_dir = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            template_dir = path
+            break
+    
+    if not template_dir:
+        raise FileNotFoundError("Template directory not found. Tried: " + ", ".join(possible_paths))
+    
     template_files = []
     
     # Prioritize templateBase.jpg
@@ -81,6 +96,9 @@ def load_templates() -> list[Image.Image]:
         template_file = os.path.join(template_dir, f"template{i}.jpg")
         if os.path.exists(template_file):
             template_files.append(template_file)
+    
+    if not template_files:
+        raise FileNotFoundError(f"No template files found in {template_dir}")
     
     templates = []
     for file_path in template_files[:5]:  # Max 5 templates
