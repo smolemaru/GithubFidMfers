@@ -98,11 +98,11 @@ export async function POST(request: NextRequest) {
     await db.payment.create({
       data: {
         userId: user.id,
-        amount: 0.99,
+        amount: '0.99',
         tokenSymbol: 'USDC',
         txHash: txHash,
-        status: 'completed',
-        purpose: 'mint',
+        status: 'CONFIRMED',
+        purpose: 'MINT',
         generationId: generationId,
       },
     })
