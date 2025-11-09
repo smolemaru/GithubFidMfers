@@ -86,6 +86,7 @@ export function GenerationResult({ generation }: GenerationResultProps) {
         onClose={() => setShowShareDialog(false)}
         generationId={generation.id}
         imageUrl={generation.imageUrl}
+        referralCode={generation.user?.referralCode || ''}
       />
     </>
   )
