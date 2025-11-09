@@ -1,4 +1,6 @@
 import { env } from '@/env'
+import { NextRequest } from 'next/server'
+import { db } from '@/lib/db'
 
 /**
  * Verify Quick Auth JWT token from Farcaster
@@ -43,6 +45,41 @@ export async function verifyQuickAuthToken(token: string) {
   } catch (e) {
     console.error('Token verification error:', e)
     return { fid: null, error: 'Authentication failed' }
+  }
+}
+
+/**
+ * Get authenticated user from request
+ * Extracts JWT token from Authorization header and verifies it
+ */
+export async function getUserFromRequest(request: NextRequest) {
+  try {
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return null
+    }
+
+    const token = authHeader.substring(7)
+    const { fid, error } = await verifyQuickAuthToken(token)
+
+    if (error || !fid) {
+      return null
+    }
+
+    // Get or create user in database
+    const user = await db.user.upsert({
+      where: { fid: parseInt(fid) },
+      create: {
+        fid: parseInt(fid),
+        generationsLeft: 1,
+      },
+      update: {},
+    })
+
+    return user
+  } catch (error) {
+    console.error('getUserFromRequest error:', error)
+    return null
   }
 }
 

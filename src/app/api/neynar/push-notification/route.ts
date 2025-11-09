@@ -29,22 +29,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Send push notification via Neynar
-    await neynarClient.publishReactionToUrl({
-      reaction_type: 'like',
-      signer_uuid: process.env.NEYNAR_MANAGED_SIGNER || '',
-      target: targetUrl || process.env.NEXT_PUBLIC_APP_URL || '',
+    // TODO: Implement Neynar push notifications when available
+    // For now, just log the notification
+    // Neynar push notifications require special setup and may not be available in all plans
+    console.log(`Push notification to FID ${fid}:`, {
+      title,
+      body,
+      targetUrl: targetUrl || process.env.NEXT_PUBLIC_APP_URL,
     })
 
-    // Note: Direct push notifications require Neynar's Push API
-    // This is a placeholder - actual implementation depends on Neynar's API capabilities
-    console.log(`Would send push notification to FID ${fid}:`, { title, body })
-
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ 
+      success: true,
+      message: 'Push notification logged (not yet implemented)'
+    })
   } catch (error) {
-    console.error('Error sending push notification:', error)
+    console.error('Error processing push notification:', error)
     return NextResponse.json(
-      { error: 'Failed to send notification' },
+      { error: 'Failed to process notification' },
       { status: 500 }
     )
   }
