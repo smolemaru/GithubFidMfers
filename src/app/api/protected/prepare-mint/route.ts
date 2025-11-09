@@ -4,7 +4,6 @@ import { db } from '@/lib/db'
 import { signMintPermit } from '@/lib/nft'
 import { uploadNFTToIPFS } from '@/lib/ipfs'
 import { neynarClient } from '@/lib/neynar'
-import fetch from 'node-fetch'
 import { env } from '@/env'
 
 // Contract deployment timestamp (set this when deploying)
