@@ -99,7 +99,6 @@ export async function POST(request: NextRequest) {
       data: {
         userId: user.id,
         amount: '0.99',
-        tokenSymbol: 'USDC',
         txHash: txHash,
         status: 'CONFIRMED',
         purpose: 'MINT',
