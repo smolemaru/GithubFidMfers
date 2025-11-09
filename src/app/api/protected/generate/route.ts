@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       data: {
         userId: user.id,
         fid: user.fid,
-        prompt: 'VibeMfer generation',
+        prompt: 'FIDMfer generation',
         status: 'PROCESSING',
         userPfpUrl: neynarUser.pfp_url,
         userBio: neynarUser.profile.bio.text,

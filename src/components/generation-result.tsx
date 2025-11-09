@@ -21,7 +21,7 @@ export function GenerationResult({ generation, referralCode }: GenerationResultP
   function handleDownload() {
     const link = document.createElement('a')
     link.href = generation.imageUrl
-    link.download = `vibemfer-${generation.id}.png`
+    link.download = `fidmfer-${generation.id}.png`
     link.click()
   }
 
@@ -29,7 +29,7 @@ export function GenerationResult({ generation, referralCode }: GenerationResultP
     return (
       <div className="glass p-8 rounded-xl text-center">
         <Loader2 className="w-12 h-12 animate-spin mx-auto text-primary mb-4" />
-        <p className="text-foreground/80">Creating your VibeMfer...</p>
+        <p className="text-foreground/80">Creating your FIDMfer...</p>
         <p className="text-sm text-foreground/50 mt-2">This may take up to 60 seconds</p>
       </div>
     )
@@ -57,7 +57,7 @@ export function GenerationResult({ generation, referralCode }: GenerationResultP
         <div className="relative aspect-square rounded-lg overflow-hidden mb-4">
           <Image
             src={generation.imageUrl}
-            alt="Generated VibeMfer"
+            alt="Generated FIDMfer"
             fill
             className="object-cover"
             priority

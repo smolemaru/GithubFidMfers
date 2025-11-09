@@ -79,7 +79,7 @@ export default function GalleryPage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between pointer-events-auto">
           <div>
             <h1 className="text-3xl font-black mb-1 bg-gradient-to-br from-white via-primary to-purple-400 bg-clip-text text-transparent">
-              VibeMfers Gallery
+              FIDMfers Gallery
             </h1>
             <p className="text-foreground/70 text-sm">
               Scroll to explore • Click to vote • 2 votes per user

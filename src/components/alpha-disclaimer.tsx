@@ -17,7 +17,7 @@ export function AlphaDisclaimer() {
               ⚠️ Alpha Version Disclaimer
             </h3>
             <p className="text-sm text-foreground/90">
-              This is an alpha version of VibeMfers. While we strive for accuracy, 
+              This is an alpha version of FIDMfers. While we strive for accuracy, 
               <span className="font-semibold text-yellow-300"> you may lose funds due to AI errors or technical issues</span>.
               By using this app, you acknowledge and accept these risks. 
               Thank you for participating in the alpha! 

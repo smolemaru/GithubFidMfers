@@ -104,7 +104,7 @@ export function GenerateSection() {
         >
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold mb-2">Generate Your VibeMfer</h2>
+              <h2 className="text-3xl font-bold mb-2">Generate Your FIDMfer</h2>
               <p className="text-foreground/70">
                 Hello, <span className="text-primary font-semibold">@{userProfile.username}</span>
               </p>

@@ -80,7 +80,7 @@ export function GalleryItem({ generation, onVote }: GalleryItemProps) {
       <div className="relative aspect-square">
         <Image
           src={generation.imageUrl}
-          alt={`VibeMfer by @${generation.user.username}`}
+          alt={`FIDMfer by @${generation.user.username}`}
           fill
           className="object-cover"
         />

@@ -26,20 +26,19 @@ export function Hero() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-primary/20 mb-8"
           >
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">AI-powered NFT minting on Base</span>
+            <span className="text-sm font-medium">ArtistxAi fusion powered minting on Base</span>
           </motion.div>
           
           {/* Main title with better gradient */}
           <h1 className="text-7xl md:text-9xl font-black mb-6 tracking-tight">
             <span className="inline-block bg-gradient-to-br from-white via-primary to-purple-400 bg-clip-text text-transparent">
-              VibeMfers
+              FIDMfers
             </span>
           </h1>
           
           <p className="text-xl md:text-2xl text-foreground/70 mb-12 max-w-2xl mx-auto leading-relaxed">
             Turn your Farcaster profile into a{' '}
             <span className="text-primary font-semibold">stunning 3DMFER</span>.
-            Remix, vote and wait for vibemarket historical deck release.
           </p>
           
           {/* CTA Buttons */}
@@ -72,7 +71,7 @@ export function Hero() {
               <div className="text-4xl font-black bg-gradient-to-br from-primary to-purple-400 bg-clip-text text-transparent mb-2">
                 0.80
               </div>
-              <div className="text-sm text-foreground/60 font-medium">0.99 USDC / Gen</div>
+              <div className="text-sm text-foreground/60 font-medium">0.99 usdc</div>
             </motion.div>
             
             <motion.div
@@ -84,7 +83,7 @@ export function Hero() {
               <div className="text-4xl font-black bg-gradient-to-br from-pink-400 to-purple-400 bg-clip-text text-transparent mb-2">
                 900
               </div>
-              <div className="text-sm text-foreground/60 font-medium">Will Become LTC on Vibechain</div>
+              <div className="text-sm text-foreground/60 font-medium">900 top creations will become LTC on VibeMarket</div>
             </motion.div>
             
             <motion.div
