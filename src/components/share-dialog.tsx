@@ -83,7 +83,6 @@ export function ShareDialog({
       toast({
         title: 'Error',
         description: 'Failed to share',
-        variant: 'destructive',
       })
     } finally {
       setSharing(false)
@@ -125,7 +124,6 @@ export function ShareDialog({
       toast({
         title: 'Error',
         description: 'Failed to share',
-        variant: 'destructive',
       })
     } finally {
       setSharing(false)
