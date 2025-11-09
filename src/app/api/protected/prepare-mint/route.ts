@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     const metadataUri = await uploadNFTToIPFS({
       imageBuffer,
       tokenId: user.fid, // Use FID as token ID
-      username: user.username,
+      username: user.username || `user${user.fid}`,
       fid: user.fid,
     })
 

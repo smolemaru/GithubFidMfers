@@ -36,7 +36,7 @@ export async function GET(
 
     return NextResponse.json({
       fid: user.fid,
-      username: user.username,
+      username: user.username || null,
       displayName: user.display_name,
       pfpUrl: user.pfp_url,
       profile: {

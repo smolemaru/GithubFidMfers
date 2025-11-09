@@ -52,8 +52,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       fid: user.fid,
-      username: user.username,
-      displayName: user.displayName,
+      username: user.username || null,
+      displayName: user.display_name || null,
       pfpUrl: user.pfpUrl,
       bio: user.bio,
       primaryAddress: user.primaryAddress,
