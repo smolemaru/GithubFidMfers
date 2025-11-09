@@ -12,9 +12,10 @@ interface GenerationResultProps {
     imageUrl: string
     status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
   }
+  referralCode: string
 }
 
-export function GenerationResult({ generation }: GenerationResultProps) {
+export function GenerationResult({ generation, referralCode }: GenerationResultProps) {
   const [showShareDialog, setShowShareDialog] = useState(false)
 
   function handleDownload() {
