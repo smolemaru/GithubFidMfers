@@ -26,18 +26,17 @@ export const metadata: Metadata = {
   },
   // Mini App embed metadata
   // See: https://miniapps.farcaster.xyz/docs/reference/mini-app-embed
-  // Note: Add real images to public/ folder for production
   other: {
     'fc:miniapp': JSON.stringify({
       version: '1',  // Must be "1" not "next" or "1.0"
-      imageUrl: 'https://via.placeholder.com/1200x630/0a0a0f/4F46E5?text=FID+MFERS',
+      imageUrl: env.NEXT_PUBLIC_APP_URL ? `${env.NEXT_PUBLIC_APP_URL}/og-image.png` : 'https://github-fid-mfers.vercel.app/og-image.png',
       button: {
         title: 'Mint Your FID MFER',
         action: {
           type: 'launch_frame',
           name: 'FID MFERS',
           url: env.NEXT_PUBLIC_APP_URL || 'https://github-fid-mfers.vercel.app',
-          splashImageUrl: 'https://via.placeholder.com/200x200/0a0a0f/4F46E5?text=FM',
+          splashImageUrl: env.NEXT_PUBLIC_APP_URL ? `${env.NEXT_PUBLIC_APP_URL}/splash.png` : 'https://github-fid-mfers.vercel.app/splash.png',
           splashBackgroundColor: '#0a0a0f',
         },
       },
