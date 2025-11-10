@@ -12,11 +12,6 @@ import { db } from '@/lib/db'
  */
 export async function verifyQuickAuthToken(token: string) {
   try {
-    // For mock tokens, return a demo FID
-    if (token === 'mock_token_for_development') {
-      return { fid: '12345', error: null }
-    }
-    
     const parts = token.split('.')
     if (parts.length !== 3) {
       return { fid: null, error: 'Invalid token format' }

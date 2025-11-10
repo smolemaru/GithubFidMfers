@@ -10,7 +10,7 @@
 
 ### 1. Sign the Manifest
 
-**Go to:** https://farcaster.xyz/~/developers/mini-apps/manifest?domain=github-fid-mfers.vercel.app
+**Go to:** https://farcaster.xyz/~/developers/mini-apps/manifest?domain=fid-mfers.vercel.app
 
 **Steps:**
 1. Connect your Farcaster account
@@ -23,17 +23,17 @@
 {
   "accountAssociation": {
     "header": "eyJmaWQiOjEyMTUyLCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MEJGNDVGOTY3RTkwZmZENjA2MzVkMUFDMTk1MDYyYTNBOUZjQzYyQiJ9",
-    "payload": "eyJkb21haW4iOiJnaXRodWItZmlkLW1mZXJzLnZlcmNlbC5hcHAifQ==",
+    "payload": "eyJkb21haW4iOiJmaWQtbWZlcnMudmVyY2VsLmFwcCJ9",
     "signature": "MHhmMTUwMWRjZjRhM2U1NWE1ZjViNGQ5M2JlNGIxYjZiOGE0ZjcwYWQ5YTE1OTNmNDk1NzllNTA2YjJkZGZjYTBlMzI4ZmRiNDZmNmVjZmFhZTU4NjYwYzBiZDc4YjgzMzc2MDAzYTkxNzhkZGIyZGIyZmM5ZDYwYjU2YTlmYzdmMDFj"
   },
   "frame": {
     "version": "1",
     "name": "FID MFERS",
-    "iconUrl": "https://github-fid-mfers.vercel.app/icon.png",
-    "homeUrl": "https://github-fid-mfers.vercel.app",
-    "imageUrl": "https://github-fid-mfers.vercel.app/og-image.png",
+    "iconUrl": "https://fid-mfers.vercel.app/icon.png",
+    "homeUrl": "https://fid-mfers.vercel.app",
+    "imageUrl": "https://fid-mfers.vercel.app/og-image.png",
     "buttonTitle": "Mint Your FID MFER",
-    "splashImageUrl": "https://github-fid-mfers.vercel.app/splash.png",
+    "splashImageUrl": "https://fid-mfers.vercel.app/splash.png",
     "splashBackgroundColor": "#0a0a0f"
   }
 }
@@ -56,7 +56,7 @@ Create and upload these images to `public/` folder:
 
 **Test:**
 ```bash
-curl https://github-fid-mfers.vercel.app/.well-known/farcaster.json
+curl https://fid-mfers.vercel.app/.well-known/farcaster.json
 ```
 
 **Should return:** HTTP 200 with valid JSON
@@ -64,7 +64,7 @@ curl https://github-fid-mfers.vercel.app/.well-known/farcaster.json
 ### 4. Test in Preview Tool
 
 **Go to:**
-https://farcaster.xyz/~/developers/mini-apps/preview?url=https://github-fid-mfers.vercel.app
+https://farcaster.xyz/~/developers/mini-apps/preview?url=https://fid-mfers.vercel.app
 
 **Verify:**
 - App loads without errors

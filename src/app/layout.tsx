@@ -29,14 +29,14 @@ export const metadata: Metadata = {
   other: {
     'fc:miniapp': JSON.stringify({
       version: '1',  // Must be "1" not "next" or "1.0"
-      imageUrl: env.NEXT_PUBLIC_APP_URL ? `${env.NEXT_PUBLIC_APP_URL}/og-image.png` : 'https://github-fid-mfers.vercel.app/og-image.png',
+      imageUrl: env.NEXT_PUBLIC_APP_URL ? `${env.NEXT_PUBLIC_APP_URL}/og-image.png` : 'https://fid-mfers.vercel.app/og-image.png',
       button: {
         title: 'Mint Your FID MFER',
         action: {
           type: 'launch_frame',
           name: 'FID MFERS',
-          url: env.NEXT_PUBLIC_APP_URL || 'https://github-fid-mfers.vercel.app',
-          splashImageUrl: env.NEXT_PUBLIC_APP_URL ? `${env.NEXT_PUBLIC_APP_URL}/splash.png` : 'https://github-fid-mfers.vercel.app/splash.png',
+          url: env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app',
+          splashImageUrl: env.NEXT_PUBLIC_APP_URL ? `${env.NEXT_PUBLIC_APP_URL}/splash.png` : 'https://fid-mfers.vercel.app/splash.png',
           splashBackgroundColor: '#0a0a0f',
         },
       },
