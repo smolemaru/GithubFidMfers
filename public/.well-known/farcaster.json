@@ -13,12 +13,12 @@
     "buttonTitle": "Mint Your FID MFER",
     "splashImageUrl": "https://fid-mfers.vercel.app/splash.png",
     "splashBackgroundColor": "#0a0a0f",
-    "subtitle": "AI-powered NFT generator for Farcaster users",
+    "subtitle": "AI NFT generator for Farcaster",
     "description": "Turn your Farcaster profile into a stunning 3DMFER. Generate and mint your unique FID MFER NFT on Base for 0.99 USDC. ArtistxAi fusion powered minting.",
     "screenshotUrls": [
       "https://fid-mfers.vercel.app/og-image.png"
     ],
-    "primaryCategory": "nft",
+    "primaryCategory": "art-creativity",
     "tags": [
       "nft",
       "farcaster",
@@ -27,8 +27,8 @@
       "generative"
     ],
     "heroImageUrl": "https://fid-mfers.vercel.app/og-image.png",
-    "tagline": "ArtistxAi fusion powered minting on Base",
-    "ogTitle": "FID MFERS - Mint Your Unique NFT",
+    "tagline": "ArtistxAi fusion on Base",
+    "ogTitle": "FID MFERS",
     "ogDescription": "AI-powered NFT generator for Farcaster users. Mint your unique FID MFER on Base for 0.99 USDC.",
     "ogImageUrl": "https://fid-mfers.vercel.app/og-image.png",
     "castShareUrl": "https://fid-mfers.vercel.app"
