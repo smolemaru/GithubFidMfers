@@ -183,11 +183,15 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
     }
   }
 
+  // Minting disabled for now
+  const mintingDisabled = true
+
   return (
     <button
       onClick={handlePayment}
-      disabled={isProcessing || !eligibility}
+      disabled={isProcessing || !eligibility || mintingDisabled}
       className="glass glass-hover px-8 py-4 rounded-full text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 mx-auto"
+      title={mintingDisabled ? 'Minting is currently disabled' : undefined}
     >
       {isProcessing ? (
         <>
@@ -197,7 +201,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
       ) : (
         <>
           <Wallet className="w-5 h-5" />
-          Pay {mintPrice} USDC
+          {mintingDisabled ? 'Minting Disabled' : `Pay ${mintPrice} USDC`}
         </>
       )}
     </button>
