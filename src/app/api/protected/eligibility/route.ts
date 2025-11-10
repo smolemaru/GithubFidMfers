@@ -460,16 +460,19 @@ export async function GET(request: NextRequest) {
       )
     }
     
+    // User is eligible - has both pro badge and enough tokens
     // Calculate mint price (all eligible users get same price since they meet requirements)
     const mintPrice = '0.99'
+    
+    console.log('✅ User is eligible - has both pro badge and enough tokens')
     
     return NextResponse.json({
       score,
       verified,
       mintPrice,
       eligible: true,
-      hasProBadge: true,
-      hasEnoughTokens: true,
+      hasProBadge: hasProBadge,
+      hasEnoughTokens: hasEnoughTokens,
       tokenBalance: formatUnits(tokenBalance, Number(tokenDecimals)),
       requiredBalance: formatUnits(requiredBalanceWithDecimals, Number(tokenDecimals)),
       tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
