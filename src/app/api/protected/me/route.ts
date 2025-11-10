@@ -22,11 +22,13 @@ export async function GET(request: NextRequest) {
 
   try {
     // Fetch user from Neynar API
+    // Use x-api-key header and x-neynar-experimental: true to filter spam
     const neynarResponse = await fetch(
       `https://api.neynar.com/v2/farcaster/user/bulk?fids=${user.fid}`,
       {
         headers: {
-          'api_key': env.NEYNAR_API_KEY || '',
+          'x-api-key': env.NEYNAR_API_KEY || '',
+          'x-neynar-experimental': 'true', // Filter spam accounts
         },
       }
     )
