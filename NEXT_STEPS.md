@@ -1,7 +1,7 @@
 # Next Steps: Database & Backend Setup
 
 ## ✅ Completed
-- Frontend deployed to Vercel: https://github-fid-mfers.vercel.app/
+- Frontend deployed to Vercel: https://fid-mfers.vercel.app/
 - All text updated (FIDMfer branding, pricing, etc.)
 
 ## 🔧 Required Setup
@@ -80,11 +80,11 @@ NEXT_PUBLIC_BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY
 # Get from https://dashboard.alchemy.com
 
 # App Config (REQUIRED)
-NEXT_PUBLIC_APP_URL=https://github-fid-mfers.vercel.app
+NEXT_PUBLIC_APP_URL=https://fid-mfers.vercel.app
 NEXT_PUBLIC_APP_NAME=FID MFERS
 NEXT_PUBLIC_CHAIN_ID=8453
 NEXT_PUBLIC_GENERATION_PRICE=0.99
-NEXT_PUBLIC_HOSTNAME=github-fid-mfers.vercel.app
+NEXT_PUBLIC_HOSTNAME=fid-mfers.vercel.app
 NEXT_PUBLIC_USDC_CONTRACT_ADDRESS=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
 
 # Smart Contract (Add after deployment)

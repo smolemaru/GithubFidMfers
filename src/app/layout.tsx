@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'FID MFERS - Mint Your Unique NFT',
     description: 'AI-powered NFT generator for Farcaster users',
-    url: env.NEXT_PUBLIC_APP_URL || 'https://github-fid-mfers.vercel.app',
+    url: env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app',
     siteName: 'FID MFERS',
     type: 'website',
     images: ['/og-image.png'],
