@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
         // If that fails, try with api_key header (alternative format)
         console.warn('x-api-key header failed, trying api_key header...')
         neynarResponse = await fetch(
-          `https://api.neynar.com/v2/farcaster/user/bulk?fids=${user.fid}`,
+          `https://api.neynar.com/v2/farcaster/user/bulk?fids=${user.fid}&view=3`,
           {
             headers: {
               'api_key': env.NEYNAR_API_KEY,
