@@ -399,20 +399,11 @@ export async function GET(request: NextRequest) {
         note: 'If your wallet holding $smolemaru is not in this list, verify it on Farcaster by connecting it to your account',
       })
       
+      // Don't return early - check both requirements together at the end
       if (!hasEnoughTokens) {
-        return NextResponse.json({
-          score,
-          verified,
-          mintPrice: '1000000', // 1m USDC if not eligible
-          eligible: false,
-          reason: `Insufficient $smolemaru balance. Required: 200,000, Current: ${tokenBalanceFormatted}`,
-          hasProBadge: true,
-          hasEnoughTokens: false,
-          tokenBalance: tokenBalanceFormatted,
-          requiredBalance: requiredBalanceFormatted,
-          tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
-          addressesChecked: uniqueAddresses,
-          note: 'If your wallet holding $smolemaru is not in the verified addresses list, please verify it on Farcaster by connecting it to your account',
+        console.log('❌ Insufficient token balance:', {
+          required: requiredBalanceFormatted,
+          current: tokenBalanceFormatted,
         })
       }
       
