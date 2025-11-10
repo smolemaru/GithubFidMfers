@@ -211,7 +211,7 @@ export async function GET(request: NextRequest) {
       
       console.log('Checking token balance:', {
         tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
-        userAddress: userAddress,
+        addressesToCheck: uniqueAddresses.length,
         requiredBalance: '200000',
       })
       
@@ -232,6 +232,23 @@ export async function GET(request: NextRequest) {
           type: 'function',
         },
       ] as const
+      
+      // Get token decimals first (in case it's not 18)
+      let tokenDecimals = TOKEN_DECIMALS
+      try {
+        const decimalsResult = await publicClient.readContract({
+          address: SMOLEMARU_TOKEN_ADDRESS,
+          abi: balanceOfAbi,
+          functionName: 'decimals',
+        })
+        tokenDecimals = BigInt(decimalsResult as number | bigint | string)
+        console.log('Token decimals:', tokenDecimals.toString())
+      } catch (error) {
+        console.warn('Could not fetch token decimals, assuming 18:', error)
+      }
+      
+      // Convert required balance to token units (with decimals)
+      const requiredBalanceWithDecimals = REQUIRED_BALANCE * (BigInt(10) ** tokenDecimals)
       
       // Check token balance for ALL addresses and sum them up
       let totalBalance = BigInt(0)
@@ -268,22 +285,6 @@ export async function GET(request: NextRequest) {
         console.log('Address with balance:', addressWithBalance)
       }
       
-      // Get token decimals (in case it's not 18)
-      let tokenDecimals = TOKEN_DECIMALS
-      try {
-        const decimalsResult = await publicClient.readContract({
-          address: SMOLEMARU_TOKEN_ADDRESS,
-          abi: balanceOfAbi,
-          functionName: 'decimals',
-        })
-        tokenDecimals = BigInt(decimalsResult as number | bigint | string)
-      } catch (error) {
-        console.warn('Could not fetch token decimals, assuming 18:', error)
-      }
-      
-      // Convert required balance to token units (with decimals)
-      const requiredBalanceWithDecimals = REQUIRED_BALANCE * (BigInt(10) ** tokenDecimals)
-      
       // Check if user has enough tokens
       hasEnoughTokens = tokenBalance >= requiredBalanceWithDecimals
       
@@ -291,7 +292,7 @@ export async function GET(request: NextRequest) {
       const requiredBalanceFormatted = formatUnits(requiredBalanceWithDecimals, Number(tokenDecimals))
       
       console.log('Token balance check:', {
-        userAddress,
+        addressesChecked: uniqueAddresses,
         tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
         tokenBalance: tokenBalance.toString(),
         tokenBalanceFormatted,
