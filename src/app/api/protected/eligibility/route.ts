@@ -341,7 +341,10 @@ export async function GET(request: NextRequest) {
       eligible: true,
       hasProBadge: true,
       hasEnoughTokens: true,
-      tokenBalance: formatUnits(tokenBalance, 18),
+      tokenBalance: formatUnits(tokenBalance, Number(tokenDecimals)),
+      requiredBalance: formatUnits(requiredBalanceWithDecimals, Number(tokenDecimals)),
+      tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
+      addressesChecked: uniqueAddresses,
     })
   } catch (error) {
     console.error('Error checking eligibility:', error)
