@@ -217,7 +217,7 @@ export async function GET(request: NextRequest) {
         requiredBalance: '200000',
       })
       
-      // ERC-20 balanceOf function signature
+      // ERC-20 balanceOf function signature - using standard ERC20 ABI
       const balanceOfAbi = [
         {
           constant: true,
@@ -225,6 +225,7 @@ export async function GET(request: NextRequest) {
           name: 'balanceOf',
           outputs: [{ name: 'balance', type: 'uint256' }],
           type: 'function',
+          stateMutability: 'view',
         },
         {
           constant: true,
@@ -232,6 +233,7 @@ export async function GET(request: NextRequest) {
           name: 'decimals',
           outputs: [{ name: '', type: 'uint8' }],
           type: 'function',
+          stateMutability: 'view',
         },
       ] as const
       
@@ -258,26 +260,37 @@ export async function GET(request: NextRequest) {
       
       for (const address of uniqueAddresses) {
         try {
-          console.log('Checking token balance for address:', address)
+          // Normalize address to lowercase for consistency
+          const normalizedAddress = address.toLowerCase() as `0x${string}`
+          console.log('Checking token balance for address:', normalizedAddress)
           
+          // Try reading contract with proper address format
           const balanceResult = await publicClient.readContract({
-            address: SMOLEMARU_TOKEN_ADDRESS,
+            address: SMOLEMARU_TOKEN_ADDRESS.toLowerCase() as `0x${string}`,
             abi: balanceOfAbi,
             functionName: 'balanceOf',
-            args: [address as `0x${string}`],
+            args: [normalizedAddress],
           })
           
           const addressBalance = BigInt(balanceResult as bigint | string | number)
-          console.log(`Balance for ${address}:`, addressBalance.toString())
+          const formattedBalance = formatUnits(addressBalance, Number(tokenDecimals))
+          console.log(`Balance for ${normalizedAddress}:`, {
+            raw: addressBalance.toString(),
+            formatted: formattedBalance,
+          })
           
           if (addressBalance > 0) {
             totalBalance += addressBalance
             if (!addressWithBalance) {
-              addressWithBalance = address
+              addressWithBalance = normalizedAddress
             }
           }
         } catch (error) {
-          console.warn(`Failed to check balance for ${address}:`, error)
+          console.error(`Failed to check balance for ${address}:`, error)
+          // Log the full error for debugging
+          if (error instanceof Error) {
+            console.error('Error details:', error.message, error.stack)
+          }
         }
       }
       

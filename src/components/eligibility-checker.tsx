@@ -101,7 +101,7 @@ export function EligibilityChecker() {
           {!eligibility.eligible && (
             <div className="text-right">
               <div className="text-2xl font-black text-red-400">
-                1m USDC
+                0.35-0.99 USDC
               </div>
               <div className="text-xs text-foreground/60">Mint Price</div>
             </div>
@@ -161,6 +161,9 @@ export function EligibilityChecker() {
               ) : (
                 <span className="text-red-400">✗ {eligibility.tokenBalance || '0'}</span>
               )}
+            </div>
+            <div className="text-xs text-foreground/50 mt-1">
+              HOLD 200.000 $smolemaru
             </div>
             {eligibility.requiredBalance && (
               <div className="text-xs text-foreground/50">
