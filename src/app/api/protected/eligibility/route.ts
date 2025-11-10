@@ -93,11 +93,23 @@ export async function GET(request: NextRequest) {
       fid: neynarUser.fid,
       username: neynarUser.username,
       power_badge: neynarUser.power_badge,
+      powerBadge: neynarUser.powerBadge,
+      pro_badge: neynarUser.pro_badge,
+      proBadge: neynarUser.proBadge,
       follower_count: neynarUser.follower_count,
       verified_addresses: neynarUser.verified_addresses,
       custody_address: neynarUser.custody_address,
       verifications: neynarUser.verifications,
       allFields: Object.keys(neynarUser), // Log all available fields
+      // Check all possible badge fields
+      allBadgeFields: {
+        power_badge: neynarUser.power_badge,
+        powerBadge: neynarUser.powerBadge,
+        pro_badge: neynarUser.pro_badge,
+        proBadge: neynarUser.proBadge,
+        verified: neynarUser.verified,
+        is_verified: neynarUser.is_verified,
+      },
     })
     
     // Try to get all verified addresses (including Base network)
@@ -133,7 +145,22 @@ export async function GET(request: NextRequest) {
       console.log('Using fallback score calculation based on filtered followers:', score)
     }
     
-    const verified = neynarUser.power_badge || false
+    // Check multiple possible fields for pro badge/power badge
+    // Neynar API might use different field names
+    const verified = 
+      neynarUser.power_badge || 
+      neynarUser.powerBadge || 
+      neynarUser.pro_badge || 
+      neynarUser.proBadge || 
+      false
+    
+    console.log('Pro badge check - all fields:', {
+      power_badge: neynarUser.power_badge,
+      powerBadge: neynarUser.powerBadge,
+      pro_badge: neynarUser.pro_badge,
+      proBadge: neynarUser.proBadge,
+      finalVerified: verified,
+    })
     
     // Check eligibility requirements:
     // 1. Must have pro subscription/badge (power_badge)
