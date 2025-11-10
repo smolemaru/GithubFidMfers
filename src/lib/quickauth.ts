@@ -12,6 +12,11 @@ import { db } from '@/lib/db'
  */
 export async function verifyQuickAuthToken(token: string) {
   try {
+    // For mock tokens, return a demo FID
+    if (token === 'mock_token_for_development') {
+      return { fid: '12345', error: null }
+    }
+    
     const parts = token.split('.')
     if (parts.length !== 3) {
       return { fid: null, error: 'Invalid token format' }
@@ -25,14 +30,9 @@ export async function verifyQuickAuthToken(token: string) {
       return { fid: null, error: 'Invalid token payload' }
     }
     
-    // Check issuer (allow mock tokens for development)
-    if (payload.iss !== 'https://auth.farcaster.xyz' && token !== 'mock_token_for_development') {
+    // Check issuer
+    if (payload.iss !== 'https://auth.farcaster.xyz') {
       return { fid: null, error: 'Invalid issuer' }
-    }
-    
-    // For mock tokens, return a demo FID
-    if (token === 'mock_token_for_development') {
-      return { fid: '12345', error: null }
     }
     
     // Check audience (should match your domain)
