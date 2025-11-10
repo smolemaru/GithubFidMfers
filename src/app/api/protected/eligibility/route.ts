@@ -235,11 +235,14 @@ export async function GET(request: NextRequest) {
         throw new Error(`Token contract verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }
       
-      console.log('Checking token balance:', {
+      console.log('🔍 Checking token balance:', {
         tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
+        tokenAddressLowercase: SMOLEMARU_TOKEN_ADDRESS.toLowerCase(),
         addressesToCheck: uniqueAddresses.length,
-        addresses: uniqueAddresses,
+        addresses: uniqueAddresses.map(a => a.toLowerCase()),
         requiredBalance: '200000',
+        network: 'Base',
+        rpcUrl: rpcUrl.replace(/\/v2\/[^/]+/, '/v2/***'),
       })
       
       // ERC-20 balanceOf function signature - using standard ERC20 ABI
@@ -264,15 +267,16 @@ export async function GET(request: NextRequest) {
       
       // Get token decimals first (in case it's not 18)
       try {
+        console.log('🔍 Fetching token decimals from contract:', SMOLEMARU_TOKEN_ADDRESS.toLowerCase())
         const decimalsResult = await publicClient.readContract({
-          address: SMOLEMARU_TOKEN_ADDRESS,
+          address: SMOLEMARU_TOKEN_ADDRESS.toLowerCase() as `0x${string}`,
           abi: balanceOfAbi,
           functionName: 'decimals',
         })
         tokenDecimals = BigInt(decimalsResult as number | bigint | string)
-        console.log('Token decimals:', tokenDecimals.toString())
+        console.log('✅ Token decimals:', tokenDecimals.toString())
       } catch (error) {
-        console.warn('Could not fetch token decimals, assuming 18:', error)
+        console.warn('⚠️  Could not fetch token decimals, assuming 18:', error)
         tokenDecimals = TOKEN_DECIMALS
       }
       
