@@ -197,14 +197,25 @@ export async function GET(request: NextRequest) {
     try {
       // Create public client for Base network
       // Use Alchemy or other RPC provider for Base
+      console.log('🔧 Setting up RPC connection...')
+      console.log('Environment check:', {
+        hasBASE_RPC_URL: !!env.BASE_RPC_URL,
+        hasALCHEMY_API_KEY: !!env.ALCHEMY_API_KEY,
+        alchemyKeyLength: env.ALCHEMY_API_KEY?.length || 0,
+        alchemyKeyPrefix: env.ALCHEMY_API_KEY?.substring(0, 5) || 'none',
+      })
+      
       let rpcUrl = env.BASE_RPC_URL
       if (!rpcUrl && env.ALCHEMY_API_KEY) {
         rpcUrl = `https://base-mainnet.g.alchemy.com/v2/${env.ALCHEMY_API_KEY}`
-      }
-      if (!rpcUrl) {
+        console.log('✅ Using Alchemy RPC (constructed from API key)')
+      } else if (rpcUrl) {
+        console.log('✅ Using BASE_RPC_URL from env')
+      } else {
         rpcUrl = 'https://mainnet.base.org' // Fallback to public RPC
+        console.log('⚠️  Using fallback public RPC (no Alchemy key found)')
       }
-      console.log('Using RPC URL:', rpcUrl.replace(/\/v2\/[^/]+/, '/v2/***'))
+      console.log('📡 Using RPC URL:', rpcUrl.replace(/\/v2\/[^/]+/, '/v2/***'))
       
       const publicClient = createPublicClient({
         chain: base,
@@ -418,9 +429,24 @@ export async function GET(request: NextRequest) {
       note: 'If your wallet holding $smolemaru is not in the verified addresses list, please verify it on Farcaster by connecting it to your account',
     })
   } catch (error) {
-    console.error('Error checking eligibility:', error)
+    console.error('❌ Error checking eligibility:', error)
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+      })
+    }
     return NextResponse.json(
-      { error: 'Failed to check eligibility', details: error instanceof Error ? error.message : 'Unknown error' },
+      { 
+        error: 'Failed to check eligibility', 
+        details: error instanceof Error ? error.message : 'Unknown error',
+        // Include helpful debugging info
+        debug: {
+          hasAlchemyKey: !!env.ALCHEMY_API_KEY,
+          hasBaseRpcUrl: !!env.BASE_RPC_URL,
+        }
+      },
       { status: 500 }
     )
   }
