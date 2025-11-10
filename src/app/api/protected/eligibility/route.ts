@@ -153,41 +153,22 @@ export async function GET(request: NextRequest) {
       console.log('Using fallback score calculation based on filtered followers:', score)
     }
     
-    // Check multiple possible fields for pro badge/power badge
-    // Neynar API might use different field names or value types
-    // Handle boolean, string, number, and truthy values
-    // Also check nested objects (profile, active_status, etc.)
-    const checkBadgeValue = (value: any): boolean => {
-      if (value === true || value === 1 || value === 'true' || value === '1') return true
-      if (value === false || value === 0 || value === 'false' || value === '0' || value === null || value === undefined) return false
-      return !!value // Truthy check for other values
-    }
+    // Check pro subscription status
+    // Pro badge is in pro.status field - if status is "subscribed", user has pro
+    const hasProSubscription = neynarUser.pro?.status === 'subscribed'
     
-    // Check all possible locations for pro badge
-    const verified = 
-      checkBadgeValue(neynarUser.power_badge) || 
-      checkBadgeValue(neynarUser.powerBadge) || 
-      checkBadgeValue(neynarUser.pro_badge) || 
-      checkBadgeValue(neynarUser.proBadge) ||
-      checkBadgeValue(neynarUser.verified) ||
-      checkBadgeValue(neynarUser.is_verified) ||
-      // Check nested objects
-      checkBadgeValue(neynarUser.profile?.power_badge) ||
-      checkBadgeValue(neynarUser.profile?.powerBadge) ||
-      checkBadgeValue(neynarUser.active_status?.power_badge) ||
-      checkBadgeValue(neynarUser.active_status?.powerBadge) ||
-      false
+    console.log('Pro subscription check:', {
+      pro: neynarUser.pro,
+      pro_status: neynarUser.pro?.status,
+      hasProSubscription,
+    })
     
-    console.log('Pro badge check - all fields:', {
-      power_badge: neynarUser.power_badge,
-      power_badge_type: typeof neynarUser.power_badge,
-      powerBadge: neynarUser.powerBadge,
-      powerBadge_type: typeof neynarUser.powerBadge,
-      pro_badge: neynarUser.pro_badge,
-      proBadge: neynarUser.proBadge,
-      verified: neynarUser.verified,
-      is_verified: neynarUser.is_verified,
-      finalVerified: verified,
+    const verified = hasProSubscription
+    
+    console.log('Pro subscription check result:', {
+      pro: neynarUser.pro,
+      pro_status: neynarUser.pro?.status,
+      hasProSubscription: verified,
     })
     
     // Check eligibility requirements:
