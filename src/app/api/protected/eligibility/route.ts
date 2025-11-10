@@ -151,20 +151,15 @@ export async function GET(request: NextRequest) {
     
     // Check pro badge requirement
     console.log('🔍 Checking pro badge requirement...', { hasProBadge, verified, power_badge: neynarUser.power_badge })
+    
+    // TEMPORARILY DISABLED: Allow balance check even without pro badge for testing
+    // TODO: Re-enable pro badge requirement after testing
     if (!hasProBadge) {
-      console.log('❌ Pro badge check failed - returning early')
-      return NextResponse.json({
-        score,
-        verified,
-        mintPrice: '1000000', // 1m USDC if not eligible
-        eligible: false,
-        reason: 'Pro subscription/badge required',
-        hasProBadge: false,
-        hasEnoughTokens: false,
-        tokenBalance: '0',
-      })
+      console.log('⚠️  Pro badge check failed, but continuing to check token balance for testing')
+      // Don't return early - continue to token balance check
+    } else {
+      console.log('✅ Pro badge check passed')
     }
-    console.log('✅ Pro badge check passed')
     
     // Check token balance requirement
     // Collect ALL verified addresses to check
