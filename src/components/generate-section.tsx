@@ -215,6 +215,7 @@ export function GenerateSection() {
                     onClick={async () => {
                       const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
                       const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
+                      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
                       
                       // Check if we're in Farcaster app - use SDK to open X/Twitter in-app
                       try {
@@ -224,7 +225,6 @@ export function GenerateSection() {
                             context.location?.type === 'channel' || 
                             context.location?.type === 'cast_share') {
                           // Use x:// protocol to open X app if available, otherwise web
-                          const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
                           await sdk.actions.openUrl(twitterUrl)
                           return
                         }
@@ -234,7 +234,6 @@ export function GenerateSection() {
                       
                       // Fallback: try to use SDK's openUrl
                       try {
-                        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
                         await sdk.actions.openUrl(twitterUrl)
                       } catch (error) {
                         // If that fails, use web URL

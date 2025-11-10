@@ -140,6 +140,8 @@ export function ShareDialog({
       const tweetText = tokenId
         ? `I just minted FID MFER #${tokenId} by @smolemaru! ✨\n\nCheck it out and mint yours:`
         : `Check out my FID MFER generation! ✨\n\nMint yours:`
+      
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(referralLink)}`
 
       // Check if we're in Farcaster app - use SDK to open X/Twitter in-app
       try {
@@ -150,7 +152,6 @@ export function ShareDialog({
             context.location?.type === 'channel' || 
             context.location?.type === 'cast_share') {
           // Use x:// protocol to open X app if available, otherwise web
-          const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(referralLink)}`
           await sdk.actions.openUrl(twitterUrl)
           toast({
             title: 'Shared on X!',
@@ -165,7 +166,6 @@ export function ShareDialog({
       
       // Fallback: try to use SDK's openUrl
       try {
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(referralLink)}`
         const { sdk } = await import('@/lib/sdk')
         await sdk.actions.openUrl(twitterUrl)
         toast({
