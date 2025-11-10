@@ -16,6 +16,7 @@ interface EligibilityResult {
   hasEnoughTokens?: boolean
   tokenBalance?: string
   requiredBalance?: string
+  note?: string
 }
 
 const SMOLEMARU_CONTRACT = '0x19d45c0497de6921d2c7f5800d279123ac36a524'
