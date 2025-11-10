@@ -25,7 +25,7 @@ Add these in Render Dashboard → Environment:
 
 ```bash
 GEMINI_API_KEY=your_gemini_api_key_here
-NEYNAR_API_KEY=49C6888F-84D9-4A0D-BFE3-80E3CF615E66
+NEYNAR_API_KEY=your_neynar_api_key_here
 PORT=10000
 ```
 

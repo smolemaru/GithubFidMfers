@@ -9,7 +9,7 @@
 ### 1. Database Setup (Neon PostgreSQL)
 
 **You already have:**
-- Neon connection string: `postgresql://neondb_owner:npg_mgcC8SVXZJY7@ep-summer-mouse-ahzr449z-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require`
+- Neon connection string: Get from your Neon dashboard
 
 **Steps:**
 1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables
@@ -52,24 +52,27 @@ Add these to Vercel Dashboard → Settings → Environment Variables:
 
 ```bash
 # Database (REQUIRED)
-DATABASE_URL=postgresql://neondb_owner:npg_mgcC8SVXZJY7@ep-summer-mouse-ahzr449z-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require
+DATABASE_URL=postgresql://user:pass@host.neon.tech/db?sslmode=require
+# Get from your Neon dashboard
 
 # Neynar (REQUIRED for Farcaster auth)
-NEYNAR_API_KEY=49C6888F-84D9-4A0D-BFE3-80E3CF615E66
-NEXT_PUBLIC_NEYNAR_CLIENT_ID=a4d8f15c-88ff-4d22-8c31-a0f6e7980c28
+NEYNAR_API_KEY=your_neynar_api_key_here
+NEXT_PUBLIC_NEYNAR_CLIENT_ID=your_neynar_client_id_here
+# Get from https://dev.neynar.com
 
 # AI Generation (REQUIRED)
-GEMINI_API_KEY=YOUR_GEMINI_KEY_HERE
+GEMINI_API_KEY=your_gemini_api_key_here
 # Get from: https://aistudio.google.com/app/apikey
 
 # Backend (REQUIRED after deploying Python backend)
 PYTHON_BACKEND_URL=https://your-backend-url.onrender.com
 
 # Wallet (REQUIRED for receiving payments)
-ADMIN_WALLET_ADDRESS=0x879bb924671d4d4c5bbd23aa98c689fef02b511d
+ADMIN_WALLET_ADDRESS=0xYourWalletAddress
 
 # IPFS (REQUIRED for NFT metadata)
-PINATA_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiI4MzQwMjgyMC05N2I5LTQ0ZDUtODM1Yi1hZDkzNTU0NzQ1YTMiLCJlbWFpbCI6ImF4eWVubmlpcGFyZW5AZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiTllDMSJ9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6ImEwZjI2MmQ0YTY1MGI1ZjQ5Y2VkIiwic2NvcGVkS2V5U2VjcmV0IjoiYmNhZmU2NjMyNjk2MDcxODI2YmE0YThkZGM4ZThkMzMwYjkwYWRjOGQ5ODNiMjU2YjljNTViMmIxYTYzMDdiM2YiLCJleHAiOjE3OTQyNDAxMTh9.wjx1E2vc0bixJ-tbkL1vXWegoaSEYcgJmVFBWL8t_uA
+PINATA_JWT=your_pinata_jwt_here
+# Get from https://app.pinata.cloud
 
 # RPC (REQUIRED for blockchain)
 BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/_cJQ3B3yIO5msQ-IN-z239yz8V4WxZs6
