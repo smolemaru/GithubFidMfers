@@ -150,29 +150,30 @@ export async function GET(request: NextRequest) {
     }
     
     // Check token balance requirement
-    // Try multiple sources for user's wallet address
-    // Priority: verified_addresses > verifications > custody_address
-    let userAddress = neynarUser.verified_addresses?.eth_addresses?.[0]
+    // Collect ALL verified addresses to check
+    const addressesToCheck: string[] = []
     
-    // If no verified address, try verifications array (these are usually the user's wallets)
-    if (!userAddress && neynarUser.verifications && neynarUser.verifications.length > 0) {
-      // Verifications are usually in format: ["0x..."]
+    // Add verified addresses
+    if (neynarUser.verified_addresses?.eth_addresses) {
+      addressesToCheck.push(...neynarUser.verified_addresses.eth_addresses)
+    }
+    
+    // Add verifications (these are usually the user's wallets)
+    if (neynarUser.verifications) {
       const ethVerifications = neynarUser.verifications.filter((v: string) => v.startsWith('0x'))
-      if (ethVerifications.length > 0) {
-        userAddress = ethVerifications[0]
-        console.log('Using verification address:', userAddress)
-      }
+      addressesToCheck.push(...ethVerifications)
     }
     
-    // If still no address, try custody address (last resort - this is the Farcaster custody wallet)
-    if (!userAddress) {
-      userAddress = neynarUser.custody_address
-      if (userAddress) {
-        console.log('Using custody address:', userAddress)
-      }
+    // Add custody address (last resort - this is the Farcaster custody wallet)
+    if (neynarUser.custody_address) {
+      addressesToCheck.push(neynarUser.custody_address)
     }
     
-    if (!userAddress) {
+    // Remove duplicates
+    const uniqueAddresses = [...new Set(addressesToCheck)]
+    console.log('All addresses to check for token balance:', uniqueAddresses)
+    
+    if (uniqueAddresses.length === 0) {
       console.error('No Ethereum address found for user:', {
         fid: neynarUser.fid,
         verified_addresses: neynarUser.verified_addresses,
@@ -190,8 +191,6 @@ export async function GET(request: NextRequest) {
         tokenBalance: '0',
       })
     }
-    
-    console.log('Checking token balance for address:', userAddress)
     
     try {
       // Create public client for Base network
@@ -234,21 +233,40 @@ export async function GET(request: NextRequest) {
         },
       ] as const
       
-      // Get token balance - try with the user address
-      console.log('Reading token balance from contract:', {
-        contract: SMOLEMARU_TOKEN_ADDRESS,
-        userAddress: userAddress,
-      })
+      // Check token balance for ALL addresses and sum them up
+      let totalBalance = BigInt(0)
+      let addressWithBalance: string | null = null
       
-      const balanceResult = await publicClient.readContract({
-        address: SMOLEMARU_TOKEN_ADDRESS,
-        abi: balanceOfAbi,
-        functionName: 'balanceOf',
-        args: [userAddress as `0x${string}`],
-      })
+      for (const address of uniqueAddresses) {
+        try {
+          console.log('Checking token balance for address:', address)
+          
+          const balanceResult = await publicClient.readContract({
+            address: SMOLEMARU_TOKEN_ADDRESS,
+            abi: balanceOfAbi,
+            functionName: 'balanceOf',
+            args: [address as `0x${string}`],
+          })
+          
+          const addressBalance = BigInt(balanceResult as bigint | string | number)
+          console.log(`Balance for ${address}:`, addressBalance.toString())
+          
+          if (addressBalance > 0) {
+            totalBalance += addressBalance
+            if (!addressWithBalance) {
+              addressWithBalance = address
+            }
+          }
+        } catch (error) {
+          console.warn(`Failed to check balance for ${address}:`, error)
+        }
+      }
       
-      tokenBalance = BigInt(balanceResult as bigint | string | number)
-      console.log('Raw balance result:', balanceResult, 'Converted to BigInt:', tokenBalance.toString())
+      tokenBalance = totalBalance
+      console.log('Total token balance across all addresses:', tokenBalance.toString())
+      if (addressWithBalance) {
+        console.log('Address with balance:', addressWithBalance)
+      }
       
       // Get token decimals (in case it's not 18)
       let tokenDecimals = TOKEN_DECIMALS

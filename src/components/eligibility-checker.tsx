@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Loader2, CheckCircle2, XCircle, AlertCircle } from 'lucide-react'
+import { Loader2, CheckCircle2, XCircle, AlertCircle, Copy, Check } from 'lucide-react'
 import { sdk } from '@/lib/sdk'
+import { useToast } from '@/components/ui/use-toast'
 
 interface EligibilityResult {
   score: number
@@ -16,7 +18,12 @@ interface EligibilityResult {
   requiredBalance?: string
 }
 
+const SMOLEMARU_CONTRACT = '0x19d45c0497de6921d2c7f5800d279123ac36a524'
+
 export function EligibilityChecker() {
+  const { toast } = useToast()
+  const [copied, setCopied] = useState(false)
+  
   const { data: eligibility, isLoading, error } = useQuery({
     queryKey: ['eligibility'],
     queryFn: async (): Promise<EligibilityResult> => {
@@ -103,7 +110,41 @@ export function EligibilityChecker() {
             </div>
           </div>
           <div>
-            <div className="text-sm text-foreground/60 mb-1">$smolemaru Balance</div>
+            <div className="text-sm text-foreground/60 mb-1">
+              $smolemaru{' '}
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(SMOLEMARU_CONTRACT)
+                    setCopied(true)
+                    toast({
+                      title: 'Copied!',
+                      description: 'Contract address copied to clipboard',
+                    })
+                    setTimeout(() => setCopied(false), 2000)
+                  } catch (error) {
+                    toast({
+                      title: 'Error',
+                      description: 'Failed to copy address',
+                    })
+                  }
+                }}
+                className="inline-flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
+                title="Click to copy contract address"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3 h-3" />
+                    <span className="font-mono">{SMOLEMARU_CONTRACT.slice(0, 6)}...{SMOLEMARU_CONTRACT.slice(-4)}</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span className="font-mono">{SMOLEMARU_CONTRACT.slice(0, 6)}...{SMOLEMARU_CONTRACT.slice(-4)}</span>
+                  </>
+                )}
+              </button>
+            </div>
             <div className="text-lg font-bold">
               {eligibility.hasEnoughTokens ? (
                 <span className="text-green-400">✓ {eligibility.tokenBalance || '0'}</span>
