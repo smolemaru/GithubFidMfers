@@ -62,10 +62,10 @@ export function ShareDialog({
 
       if (!res.ok) throw new Error('Failed to record share')
 
-      // Create Farcaster cast with referral link
-      const castText = tokenId
-        ? `I just minted FID MFER #${tokenId} by @smolemaru! ✨\n\nCheck it out and mint yours:`
-        : `Check out my FID MFER generation! ✨\n\nMint yours:`
+            // Create Farcaster cast with referral link
+            const castText = tokenId
+              ? `I just minted FID MFER #${tokenId} by @smolemaru! ✨\n\nCheck it out and mint yours:\n\n@smolemaru $smolemaru #FIDMfers`
+              : `Check out my FID MFER generation! ✨\n\nMint yours:\n\n@smolemaru $smolemaru #FIDMfers`
       
       const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}&embeds[]=${encodeURIComponent(referralLink)}`
 
@@ -112,10 +112,10 @@ export function ShareDialog({
 
       if (!res.ok) throw new Error('Failed to record share')
 
-      // Create X/Twitter post with referral link
-      const tweetText = tokenId
-        ? `I just minted FID MFER #${tokenId} by @smolemaru! ✨\n\nCheck it out and mint yours:`
-        : `Check out my FID MFER generation! ✨\n\nMint yours:`
+            // Create X/Twitter post with referral link
+            const tweetText = tokenId
+              ? `I just minted FID MFER #${tokenId} by @smolemaru! ✨\n\nCheck it out and mint yours:\n\n@smolemaru $smolemaru #FIDMfers`
+              : `Check out my FID MFER generation! ✨\n\nMint yours:\n\n@smolemaru $smolemaru #FIDMfers`
       
       const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(referralLink)}`
 

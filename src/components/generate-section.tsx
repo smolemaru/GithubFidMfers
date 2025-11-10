@@ -175,10 +175,10 @@ export function GenerateSection() {
                 <p className="text-sm text-foreground/60 mb-4">Share FIDMfers coming</p>
                 <div className="flex gap-3 justify-center">
                   <button
-                    onClick={async () => {
-                      const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
-                      const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
-                      const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
+                          onClick={async () => {
+                            const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓\n\n@smolemaru $smolemaru #FIDMfers'
+                            const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
+                            const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
                       
                       // Use SDK's openUrl which opens in-app browser if in Farcaster app
                       try {
@@ -195,10 +195,10 @@ export function GenerateSection() {
                     Share on Farcaster
                   </button>
                   <button
-                    onClick={async () => {
-                      const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
-                      const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
-                      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+                          onClick={async () => {
+                            const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓\n\n@smolemaru $smolemaru #FIDMfers'
+                            const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
+                            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
                       
                       // Check if we're in Farcaster app - use SDK to open X/Twitter in-app
                       try {
