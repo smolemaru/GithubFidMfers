@@ -179,22 +179,32 @@ export function GenerateSection() {
                       const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
                       const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
                       
-                      // Check if we're in Farcaster app (use SDK's openUrl method)
+                      // Check if we're in Farcaster app - use SDK to compose cast directly
                       try {
                         const context = await sdk.context
-                        if (context.location?.type === 'cast_embed' || context.location?.type === 'channel') {
-                          // In Farcaster app - use SDK's openUrl to open in-app
-                          const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
-                          await sdk.actions.openUrl(farcasterUrl)
+                        // If in Farcaster app, use SDK's openUrl which opens in-app browser
+                        if (context.location?.type === 'cast_embed' || 
+                            context.location?.type === 'channel' || 
+                            context.location?.type === 'cast_share') {
+                          // Use warpcast:// protocol to open compose in-app
+                          const composeUrl = `warpcast://~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
+                          await sdk.actions.openUrl(composeUrl)
                           return
                         }
                       } catch (error) {
-                        console.log('Not in Farcaster app context, using web URL')
+                        console.log('SDK context check failed:', error)
                       }
                       
-                      // Not in Farcaster app or SDK failed - use web URL
-                      const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
-                      window.open(farcasterUrl, '_blank')
+                      // Fallback: try to detect if we're in Farcaster app by checking window
+                      try {
+                        // Try to use SDK's openUrl which should work in Farcaster app
+                        const composeUrl = `warpcast://~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
+                        await sdk.actions.openUrl(composeUrl)
+                      } catch (error) {
+                        // If that fails, use web URL
+                        const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
+                        window.open(farcasterUrl, '_blank')
+                      }
                     }}
                     className="glass glass-hover px-6 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors"
                   >
@@ -206,22 +216,30 @@ export function GenerateSection() {
                       const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
                       const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
                       
-                      // Check if we're in Farcaster app (use SDK's openUrl method)
+                      // Check if we're in Farcaster app - use SDK to open X/Twitter in-app
                       try {
                         const context = await sdk.context
-                        if (context.location?.type === 'cast_embed' || context.location?.type === 'channel') {
-                          // In Farcaster app - use SDK's openUrl to open in-app
+                        // If in Farcaster app, use SDK's openUrl which opens in-app browser
+                        if (context.location?.type === 'cast_embed' || 
+                            context.location?.type === 'channel' || 
+                            context.location?.type === 'cast_share') {
+                          // Use x:// protocol to open X app if available, otherwise web
                           const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
                           await sdk.actions.openUrl(twitterUrl)
                           return
                         }
                       } catch (error) {
-                        console.log('Not in Farcaster app context, using web URL')
+                        console.log('SDK context check failed:', error)
                       }
                       
-                      // Not in Farcaster app or SDK failed - use web URL
-                      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
-                      window.open(twitterUrl, '_blank')
+                      // Fallback: try to use SDK's openUrl
+                      try {
+                        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+                        await sdk.actions.openUrl(twitterUrl)
+                      } catch (error) {
+                        // If that fails, use web URL
+                        window.open(twitterUrl, '_blank')
+                      }
                     }}
                     className="glass glass-hover px-6 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors"
                   >

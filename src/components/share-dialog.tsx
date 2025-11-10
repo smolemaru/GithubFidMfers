@@ -67,14 +67,17 @@ export function ShareDialog({
         ? `I just minted FID MFER #${tokenId} by @smolemaru! ✨\n\nCheck it out and mint yours:`
         : `Check out my FID MFER generation! ✨\n\nMint yours:`
 
-      // Check if we're in Farcaster app (use SDK's openUrl method)
+      // Check if we're in Farcaster app - use SDK to compose cast directly
       try {
         const { sdk } = await import('@/lib/sdk')
         const context = await sdk.context
-        if (context.location?.type === 'cast_embed' || context.location?.type === 'channel') {
-          // In Farcaster app - use SDK's openUrl to open in-app
-          const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}&embeds[]=${encodeURIComponent(referralLink)}`
-          await sdk.actions.openUrl(farcasterUrl)
+        // If in Farcaster app, use warpcast:// protocol to open compose in-app
+        if (context.location?.type === 'cast_embed' || 
+            context.location?.type === 'channel' || 
+            context.location?.type === 'cast_share') {
+          // Use warpcast:// protocol to open compose in-app
+          const composeUrl = `warpcast://~/compose?text=${encodeURIComponent(castText)}&embeds[]=${encodeURIComponent(referralLink)}`
+          await sdk.actions.openUrl(composeUrl)
           toast({
             title: 'Shared on Farcaster!',
             description: 'Your referral link has been included',
@@ -83,12 +86,25 @@ export function ShareDialog({
           return
         }
       } catch (error) {
-        console.log('Not in Farcaster app context, using web URL')
+        console.log('SDK context check failed:', error)
       }
       
-      // Not in Farcaster app or SDK failed - use web URL
-      const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}&embeds[]=${encodeURIComponent(referralLink)}`
-      window.open(farcasterUrl, '_blank')
+      // Fallback: try to use SDK's openUrl
+      try {
+        const composeUrl = `warpcast://~/compose?text=${encodeURIComponent(castText)}&embeds[]=${encodeURIComponent(referralLink)}`
+        const { sdk } = await import('@/lib/sdk')
+        await sdk.actions.openUrl(composeUrl)
+        toast({
+          title: 'Shared on Farcaster!',
+          description: 'Your referral link has been included',
+        })
+        onClose()
+        return
+      } catch (error) {
+        // If that fails, use web URL
+        const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}&embeds[]=${encodeURIComponent(referralLink)}`
+        window.open(farcasterUrl, '_blank')
+      }
 
       toast({
         title: 'Shared on Farcaster!',
@@ -125,12 +141,15 @@ export function ShareDialog({
         ? `I just minted FID MFER #${tokenId} by @smolemaru! ✨\n\nCheck it out and mint yours:`
         : `Check out my FID MFER generation! ✨\n\nMint yours:`
 
-      // Check if we're in Farcaster app (use SDK's openUrl method)
+      // Check if we're in Farcaster app - use SDK to open X/Twitter in-app
       try {
         const { sdk } = await import('@/lib/sdk')
         const context = await sdk.context
-        if (context.location?.type === 'cast_embed' || context.location?.type === 'channel') {
-          // In Farcaster app - use SDK's openUrl to open in-app
+        // If in Farcaster app, use SDK's openUrl which opens in-app browser
+        if (context.location?.type === 'cast_embed' || 
+            context.location?.type === 'channel' || 
+            context.location?.type === 'cast_share') {
+          // Use x:// protocol to open X app if available, otherwise web
           const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(referralLink)}`
           await sdk.actions.openUrl(twitterUrl)
           toast({
@@ -141,12 +160,24 @@ export function ShareDialog({
           return
         }
       } catch (error) {
-        console.log('Not in Farcaster app context, using web URL')
+        console.log('SDK context check failed:', error)
       }
       
-      // Not in Farcaster app or SDK failed - use web URL
-      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(referralLink)}`
-      window.open(twitterUrl, '_blank')
+      // Fallback: try to use SDK's openUrl
+      try {
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(referralLink)}`
+        const { sdk } = await import('@/lib/sdk')
+        await sdk.actions.openUrl(twitterUrl)
+        toast({
+          title: 'Shared on X!',
+          description: 'Your referral link has been included',
+        })
+        onClose()
+        return
+      } catch (error) {
+        // If that fails, use web URL
+        window.open(twitterUrl, '_blank')
+      }
 
       toast({
         title: 'Shared on X!',

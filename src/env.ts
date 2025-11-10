@@ -15,6 +15,7 @@ export const env = createEnv({
     USDC_CONTRACT_ADDRESS: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional(),
     PINATA_JWT: z.string().min(1).optional(),
     BASE_RPC_URL: z.string().url().optional(),
+    ALCHEMY_API_KEY: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url().optional(),
@@ -40,6 +41,7 @@ export const env = createEnv({
     USDC_CONTRACT_ADDRESS: process.env.USDC_CONTRACT_ADDRESS,
     PINATA_JWT: process.env.PINATA_JWT,
     BASE_RPC_URL: process.env.BASE_RPC_URL,
+    ALCHEMY_API_KEY: process.env.ALCHEMY_API_KEY,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     NEXT_PUBLIC_CHAIN_ID: process.env.NEXT_PUBLIC_CHAIN_ID,

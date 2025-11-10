@@ -137,26 +137,65 @@ export async function GET(request: NextRequest) {
     }
     
     // Check token balance requirement
-    const userAddress = neynarUser.verified_addresses?.eth_addresses?.[0]
+    // Try multiple sources for user's wallet address
+    let userAddress = neynarUser.verified_addresses?.eth_addresses?.[0]
+    
+    // If no verified address, try custody address or verifications
     if (!userAddress) {
+      userAddress = neynarUser.custody_address
+    }
+    
+    // If still no address, try verifications array
+    if (!userAddress && neynarUser.verifications && neynarUser.verifications.length > 0) {
+      // Verifications are usually in format: ["0x..."]
+      const ethVerifications = neynarUser.verifications.filter((v: string) => v.startsWith('0x'))
+      if (ethVerifications.length > 0) {
+        userAddress = ethVerifications[0]
+      }
+    }
+    
+    if (!userAddress) {
+      console.error('No Ethereum address found for user:', {
+        fid: neynarUser.fid,
+        verified_addresses: neynarUser.verified_addresses,
+        custody_address: neynarUser.custody_address,
+        verifications: neynarUser.verifications,
+      })
       return NextResponse.json({
         score,
         verified,
         mintPrice: '0.00',
         eligible: false,
-        reason: 'No verified Ethereum address found',
+        reason: 'No verified Ethereum address found. Please verify your wallet on Farcaster.',
         hasProBadge: true,
         hasEnoughTokens: false,
         tokenBalance: '0',
       })
     }
     
+    console.log('Checking token balance for address:', userAddress)
+    
     try {
       // Create public client for Base network
-      const rpcUrl = env.BASE_RPC_URL || 'https://mainnet.base.org'
+      // Use Alchemy or other RPC provider for Base
+      let rpcUrl = env.BASE_RPC_URL
+      if (!rpcUrl && env.ALCHEMY_API_KEY) {
+        rpcUrl = `https://base-mainnet.g.alchemy.com/v2/${env.ALCHEMY_API_KEY}`
+      }
+      if (!rpcUrl) {
+        rpcUrl = 'https://mainnet.base.org' // Fallback to public RPC
+      }
+      console.log('Using RPC URL:', rpcUrl.replace(/\/v2\/[^/]+/, '/v2/***'))
+      
       const publicClient = createPublicClient({
         chain: base,
         transport: http(rpcUrl),
+      })
+      
+      console.log('Checking token balance:', {
+        tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
+        userAddress: userAddress,
+        requiredBalance: '200000',
       })
       
       // ERC-20 balanceOf function signature
@@ -205,18 +244,33 @@ export async function GET(request: NextRequest) {
       // Check if user has enough tokens
       hasEnoughTokens = tokenBalance >= requiredBalanceWithDecimals
       
+      const tokenBalanceFormatted = formatUnits(tokenBalance, Number(tokenDecimals))
+      const requiredBalanceFormatted = formatUnits(requiredBalanceWithDecimals, Number(tokenDecimals))
+      
+      console.log('Token balance check:', {
+        userAddress,
+        tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
+        tokenBalance: tokenBalance.toString(),
+        tokenBalanceFormatted,
+        requiredBalance: requiredBalanceWithDecimals.toString(),
+        requiredBalanceFormatted,
+        hasEnoughTokens,
+        decimals: tokenDecimals.toString(),
+      })
+      
       if (!hasEnoughTokens) {
-        const balanceFormatted = formatUnits(tokenBalance, Number(tokenDecimals))
         return NextResponse.json({
           score,
           verified,
           mintPrice: '0.00',
           eligible: false,
-          reason: `Insufficient $smolemaru balance. Required: 200,000, Current: ${balanceFormatted}`,
+          reason: `Insufficient $smolemaru balance. Required: 200,000, Current: ${tokenBalanceFormatted}`,
           hasProBadge: true,
           hasEnoughTokens: false,
-          tokenBalance: balanceFormatted,
-          requiredBalance: '200000',
+          tokenBalance: tokenBalanceFormatted,
+          requiredBalance: requiredBalanceFormatted,
+          tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
+          userAddress: userAddress,
         })
       }
       
