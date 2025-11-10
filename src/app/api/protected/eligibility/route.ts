@@ -38,8 +38,9 @@ export async function GET(request: NextRequest) {
     
     try {
       // First try with x-api-key header (recommended format)
+      // Add view parameter to get full user data including pro badge
       neynarResponse = await fetch(
-        `https://api.neynar.com/v2/farcaster/user/bulk?fids=${user.fid}`,
+        `https://api.neynar.com/v2/farcaster/user/bulk?fids=${user.fid}&view=3`,
         {
           headers: {
             'x-api-key': env.NEYNAR_API_KEY,
@@ -148,12 +149,14 @@ export async function GET(request: NextRequest) {
     // Check multiple possible fields for pro badge/power badge
     // Neynar API might use different field names or value types
     // Handle boolean, string, number, and truthy values
+    // Also check nested objects (profile, active_status, etc.)
     const checkBadgeValue = (value: any): boolean => {
       if (value === true || value === 1 || value === 'true' || value === '1') return true
       if (value === false || value === 0 || value === 'false' || value === '0' || value === null || value === undefined) return false
       return !!value // Truthy check for other values
     }
     
+    // Check all possible locations for pro badge
     const verified = 
       checkBadgeValue(neynarUser.power_badge) || 
       checkBadgeValue(neynarUser.powerBadge) || 
@@ -161,6 +164,11 @@ export async function GET(request: NextRequest) {
       checkBadgeValue(neynarUser.proBadge) ||
       checkBadgeValue(neynarUser.verified) ||
       checkBadgeValue(neynarUser.is_verified) ||
+      // Check nested objects
+      checkBadgeValue(neynarUser.profile?.power_badge) ||
+      checkBadgeValue(neynarUser.profile?.powerBadge) ||
+      checkBadgeValue(neynarUser.active_status?.power_badge) ||
+      checkBadgeValue(neynarUser.active_status?.powerBadge) ||
       false
     
     console.log('Pro badge check - all fields:', {
