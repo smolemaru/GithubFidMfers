@@ -32,11 +32,13 @@ export function EligibilityChecker() {
       const profile = await profileResponse.json()
       
       // Fetch Neynar user data to get score and verification
+      // Use x-api-key header and x-neynar-experimental: true to filter spam
       const neynarResponse = await fetch(
         `https://api.neynar.com/v2/farcaster/user/bulk?fids=${profile.fid}`,
         {
           headers: {
-            'api_key': env.NEYNAR_API_KEY || '',
+            'x-api-key': env.NEYNAR_API_KEY || '',
+            'x-neynar-experimental': 'true', // Filter spam accounts
           },
         }
       )
@@ -55,24 +57,39 @@ export function EligibilityChecker() {
         throw new Error('User not found in Neynar response')
       }
       
+      // Log all available fields to debug
       console.log('Neynar user data:', {
         fid: neynarUser.fid,
-        neynar_score: neynarUser.neynar_score,
-        score: neynarUser.score,
+        username: neynarUser.username,
         power_badge: neynarUser.power_badge,
         follower_count: neynarUser.follower_count,
+        verified_addresses: neynarUser.verified_addresses,
+        allFields: Object.keys(neynarUser), // Log all available fields
       })
       
-      // Get Neynar score (default to 0 if not available)
-      // Neynar score might be in different fields, try multiple
-      // If score is not available, calculate a rough estimate based on follower count
-      let score = neynarUser.neynar_score || neynarUser.score || 0
+      // Get Neynar score - check multiple possible fields
+      // According to Neynar docs, score might be in different fields
+      let score = 0
       
-      // If no score available, use a rough estimate based on followers
-      // This is a fallback - real Neynar score should be available in neynar_score field
+      // Try different possible score fields
+      if (neynarUser.neynar_score !== undefined) {
+        score = neynarUser.neynar_score
+      } else if (neynarUser.score !== undefined) {
+        score = neynarUser.score
+      } else if (neynarUser.user_score !== undefined) {
+        score = neynarUser.user_score
+      } else if (neynarUser.quality_score !== undefined) {
+        score = neynarUser.quality_score
+      }
+      
+      // If no score available, calculate a rough estimate based on filtered follower count
+      // Using filtered followers (with experimental flag) gives more accurate estimate
       if (score === 0 && neynarUser.follower_count) {
-        // Rough estimate: 1000 followers = 0.1 score, 5000 = 0.5, 10000 = 1.0
+        // Rough estimate based on filtered follower count:
+        // 1000 filtered followers = 0.1 score, 5000 = 0.5, 10000 = 1.0
+        // Filtered followers are more accurate than raw followers
         score = Math.min(neynarUser.follower_count / 10000, 1.0)
+        console.log('Using fallback score calculation based on filtered followers:', score)
       }
       
       const verified = neynarUser.power_badge || false

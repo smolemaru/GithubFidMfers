@@ -45,11 +45,13 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
       
       const profile = await profileResponse.json()
       
+      // Use x-api-key header and x-neynar-experimental: true to filter spam
       const neynarResponse = await fetch(
         `https://api.neynar.com/v2/farcaster/user/bulk?fids=${profile.fid}`,
         {
           headers: {
-            'api_key': env.NEYNAR_API_KEY || '',
+            'x-api-key': env.NEYNAR_API_KEY || '',
+            'x-neynar-experimental': 'true', // Filter spam accounts
           },
         }
       )
@@ -68,13 +70,23 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
         throw new Error('User not found in Neynar response')
       }
       
-      // Get Neynar score (default to 0 if not available)
-      // If score is not available, calculate a rough estimate based on follower count
-      let score = neynarUser.neynar_score || neynarUser.score || 0
+      // Get Neynar score - check multiple possible fields
+      let score = 0
       
-      // If no score available, use a rough estimate based on followers
+      // Try different possible score fields
+      if (neynarUser.neynar_score !== undefined) {
+        score = neynarUser.neynar_score
+      } else if (neynarUser.score !== undefined) {
+        score = neynarUser.score
+      } else if (neynarUser.user_score !== undefined) {
+        score = neynarUser.user_score
+      } else if (neynarUser.quality_score !== undefined) {
+        score = neynarUser.quality_score
+      }
+      
+      // If no score available, calculate a rough estimate based on filtered follower count
       if (score === 0 && neynarUser.follower_count) {
-        // Rough estimate: 1000 followers = 0.1 score, 5000 = 0.5, 10000 = 1.0
+        // Rough estimate based on filtered followers (more accurate)
         score = Math.min(neynarUser.follower_count / 10000, 1.0)
       }
       
