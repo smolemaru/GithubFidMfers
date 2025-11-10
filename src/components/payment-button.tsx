@@ -58,14 +58,30 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
         throw new Error('Failed to fetch Neynar data')
       }
       
-      const neynarData = await neynarResponse.json()
-      const neynarUser = neynarData.users[0]
-      
-      if (!neynarUser) {
-        throw new Error('User not found')
+      if (!neynarResponse.ok) {
+        const errorText = await neynarResponse.text()
+        console.error('Neynar API error:', neynarResponse.status, errorText)
+        throw new Error(`Failed to fetch Neynar data: ${neynarResponse.status}`)
       }
       
-      const score = neynarUser.neynar_score || neynarUser.score || 0
+      const neynarData = await neynarResponse.json()
+      const neynarUser = neynarData.users?.[0]
+      
+      if (!neynarUser) {
+        console.error('Neynar user not found in response:', neynarData)
+        throw new Error('User not found in Neynar response')
+      }
+      
+      // Get Neynar score (default to 0 if not available)
+      // If score is not available, calculate a rough estimate based on follower count
+      let score = neynarUser.neynar_score || neynarUser.score || 0
+      
+      // If no score available, use a rough estimate based on followers
+      if (score === 0 && neynarUser.follower_count) {
+        // Rough estimate: 1000 followers = 0.1 score, 5000 = 0.5, 10000 = 1.0
+        score = Math.min(neynarUser.follower_count / 10000, 1.0)
+      }
+      
       const verified = neynarUser.power_badge || false
       
       return {

@@ -42,15 +42,26 @@ export function EligibilityChecker() {
       )
       
       if (!neynarResponse.ok) {
-        throw new Error('Failed to fetch Neynar data')
+        const errorText = await neynarResponse.text()
+        console.error('Neynar API error:', neynarResponse.status, errorText)
+        throw new Error(`Failed to fetch Neynar data: ${neynarResponse.status}`)
       }
       
       const neynarData = await neynarResponse.json()
-      const neynarUser = neynarData.users[0]
+      const neynarUser = neynarData.users?.[0]
       
       if (!neynarUser) {
-        throw new Error('User not found')
+        console.error('Neynar user not found in response:', neynarData)
+        throw new Error('User not found in Neynar response')
       }
+      
+      console.log('Neynar user data:', {
+        fid: neynarUser.fid,
+        neynar_score: neynarUser.neynar_score,
+        score: neynarUser.score,
+        power_badge: neynarUser.power_badge,
+        follower_count: neynarUser.follower_count,
+      })
       
       // Get Neynar score (default to 0 if not available)
       // Neynar score might be in different fields, try multiple

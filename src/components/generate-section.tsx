@@ -176,7 +176,7 @@ export function GenerateSection() {
                 <div className="flex gap-3 justify-center">
                   <button
                     onClick={() => {
-                      const text = 'FIDMfers coming'
+                      const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
                       const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
                       const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
                       window.open(farcasterUrl, '_blank')
@@ -188,7 +188,7 @@ export function GenerateSection() {
                   </button>
                   <button
                     onClick={() => {
-                      const text = 'FIDMfers coming'
+                      const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
                       const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
                       const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
                       window.open(twitterUrl, '_blank')
