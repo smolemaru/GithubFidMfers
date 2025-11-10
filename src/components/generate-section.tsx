@@ -9,6 +9,7 @@ import { GenerationResult } from './generation-result'
 import { EligibilityChecker } from './eligibility-checker'
 import { useQuery } from '@tanstack/react-query'
 import { env } from '@/env'
+import { Share2 } from 'lucide-react'
 
 interface UserProfile {
   fid: number
@@ -168,6 +169,37 @@ export function GenerateSection() {
                 </p>
               </div>
               <PaymentButton onSuccess={handlePaymentSuccess} />
+              
+              {/* Share Buttons */}
+              <div className="pt-6 border-t border-white/10">
+                <p className="text-sm text-foreground/60 mb-4">Share FIDMfers coming</p>
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={() => {
+                      const text = 'FIDMfers coming'
+                      const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
+                      const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
+                      window.open(farcasterUrl, '_blank')
+                    }}
+                    className="glass glass-hover px-6 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share on Farcaster
+                  </button>
+                  <button
+                    onClick={() => {
+                      const text = 'FIDMfers coming'
+                      const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
+                      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+                      window.open(twitterUrl, '_blank')
+                    }}
+                    className="glass glass-hover px-6 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share on X
+                  </button>
+                </div>
+              </div>
             </div>
           ) : generationsLeft > 0 ? (
             <div className="space-y-6">
