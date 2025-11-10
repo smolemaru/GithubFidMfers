@@ -83,8 +83,21 @@ export async function GET(request: NextRequest) {
       power_badge: neynarUser.power_badge,
       follower_count: neynarUser.follower_count,
       verified_addresses: neynarUser.verified_addresses,
+      custody_address: neynarUser.custody_address,
+      verifications: neynarUser.verifications,
       allFields: Object.keys(neynarUser), // Log all available fields
     })
+    
+    // Try to get all verified addresses (including Base network)
+    const allVerifiedAddresses: string[] = []
+    if (neynarUser.verified_addresses?.eth_addresses) {
+      allVerifiedAddresses.push(...neynarUser.verified_addresses.eth_addresses)
+    }
+    if (neynarUser.verifications) {
+      const ethVerifications = neynarUser.verifications.filter((v: string) => v.startsWith('0x'))
+      allVerifiedAddresses.push(...ethVerifications)
+    }
+    console.log('All verified addresses found:', allVerifiedAddresses)
     
     // Get Neynar score - check multiple possible fields
     let score = 0
