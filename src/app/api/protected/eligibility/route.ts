@@ -183,7 +183,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         score,
         verified,
-        mintPrice: '0.00',
+        mintPrice: '1000000', // 1m USDC if not eligible
         eligible: false,
         reason: 'No verified Ethereum address found. Please verify your wallet on Farcaster.',
         hasProBadge: true,
