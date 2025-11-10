@@ -5,11 +5,20 @@ import { env } from '@/env'
 
 export async function GET(request: NextRequest) {
   // Get user from JWT token
+  const authHeader = request.headers.get('authorization')
+  console.log('Auth header present:', !!authHeader)
+  
   const user = await getUserFromRequest(request)
   
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    console.error('getUserFromRequest returned null - authentication failed')
+    return NextResponse.json({ 
+      error: 'Unauthorized',
+      message: 'Failed to authenticate. Check server logs for details.'
+    }, { status: 401 })
   }
+  
+  console.log('User authenticated:', user.fid)
 
   try {
     // Fetch user from Neynar API

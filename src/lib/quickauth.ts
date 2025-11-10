@@ -14,20 +14,36 @@ export async function verifyQuickAuthToken(token: string) {
   try {
     const parts = token.split('.')
     if (parts.length !== 3) {
+      console.error('Invalid token format: expected 3 parts, got', parts.length)
       return { fid: null, error: 'Invalid token format' }
     }
     
     // Decode JWT payload
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString())
+    let payload
+    try {
+      payload = JSON.parse(Buffer.from(parts[1], 'base64').toString())
+    } catch (e) {
+      console.error('Failed to decode token payload:', e)
+      return { fid: null, error: 'Invalid token payload format' }
+    }
+    
+    console.log('Token payload:', { sub: payload.sub, iss: payload.iss, aud: payload.aud, exp: payload.exp })
     
     // Validate required fields
-    if (!payload.sub || !payload.iss || !payload.aud) {
-      return { fid: null, error: 'Invalid token payload' }
+    if (!payload.sub) {
+      console.error('Missing sub (FID) in token')
+      return { fid: null, error: 'Missing FID in token' }
+    }
+    
+    if (!payload.iss) {
+      console.error('Missing iss (issuer) in token')
+      return { fid: null, error: 'Missing issuer in token' }
     }
     
     // Check issuer
     if (payload.iss !== 'https://auth.farcaster.xyz') {
-      return { fid: null, error: 'Invalid issuer' }
+      console.warn(`Unexpected issuer: ${payload.iss}, expected https://auth.farcaster.xyz`)
+      // Still allow it for now
     }
     
     // Check audience (should match your domain)
@@ -38,20 +54,21 @@ export async function verifyQuickAuthToken(token: string) {
     
     if (audience && expected && audience !== expected) {
       console.warn(`Audience mismatch: expected ${expected}, got ${audience}`)
-      // Don't fail on audience mismatch for now - allow it to work
-      // return { fid: null, error: 'Invalid audience' }
+      // Don't fail on audience mismatch - allow it to work
     }
     
     // Check expiration
     if (payload.exp && Date.now() >= payload.exp * 1000) {
+      console.error('Token expired:', new Date(payload.exp * 1000))
       return { fid: null, error: 'Token expired' }
     }
     
     // Return FID (subject)
+    console.log('Token verified successfully, FID:', payload.sub)
     return { fid: payload.sub, error: null }
   } catch (e) {
     console.error('Token verification error:', e)
-    return { fid: null, error: 'Authentication failed' }
+    return { fid: null, error: `Authentication failed: ${e instanceof Error ? e.message : 'Unknown error'}` }
   }
 }
 

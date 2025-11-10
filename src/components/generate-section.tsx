@@ -28,20 +28,32 @@ export function GenerateSection() {
     queryKey: ['userProfile'],
     queryFn: async () => {
       try {
+        console.log('Getting token from SDK...')
         const { token } = await sdk.quickAuth.getToken()
+        console.log('Token received:', !!token, token ? `${token.substring(0, 20)}...` : 'null')
+        
         if (!token) {
-          throw new Error('No token received from SDK. Make sure manifest is signed.')
+          throw new Error('No token received from SDK. Make sure manifest is signed and accessible.')
         }
+        
+        console.log('Fetching user profile...')
         const response = await fetch('/api/protected/me', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
+        
+        console.log('Response status:', response.status)
+        
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
-          throw new Error(errorData.error || 'Failed to fetch profile')
+          console.error('Profile fetch error:', errorData)
+          throw new Error(errorData.error || errorData.message || `Failed to fetch profile: ${response.status}`)
         }
-        return response.json() as Promise<UserProfile>
+        
+        const profile = await response.json()
+        console.log('Profile fetched successfully:', profile.fid)
+        return profile as UserProfile
       } catch (error) {
         console.error('Auth error:', error)
         throw error
