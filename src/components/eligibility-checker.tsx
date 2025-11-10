@@ -31,26 +31,55 @@ export function EligibilityChecker() {
       
       const profile = await profileResponse.json()
       
-      // Fetch Neynar user data to get score and verification
-      // Use x-api-key header and x-neynar-experimental: true to filter spam
-      const neynarResponse = await fetch(
-        `https://api.neynar.com/v2/farcaster/user/bulk?fids=${profile.fid}`,
-        {
-          headers: {
-            'x-api-key': env.NEYNAR_API_KEY || '',
-            'x-neynar-experimental': 'true', // Filter spam accounts
-          },
-        }
-      )
-      
-      if (!neynarResponse.ok) {
-        const errorText = await neynarResponse.text()
-        console.error('Neynar API error:', neynarResponse.status, errorText)
-        throw new Error(`Failed to fetch Neynar data: ${neynarResponse.status}`)
+      // Check if API key is available
+      if (!env.NEYNAR_API_KEY) {
+        console.error('NEYNAR_API_KEY is not set')
+        throw new Error('Neynar API key not configured. Please set NEYNAR_API_KEY in environment variables.')
       }
       
-      const neynarData = await neynarResponse.json()
-      const neynarUser = neynarData.users?.[0]
+      // Fetch Neynar user data to get score and verification
+      // Try both header formats - some Neynar endpoints use different formats
+      let neynarResponse
+      let neynarData
+      let neynarUser
+      
+      try {
+        // First try with x-api-key header (recommended format)
+        neynarResponse = await fetch(
+          `https://api.neynar.com/v2/farcaster/user/bulk?fids=${profile.fid}`,
+          {
+            headers: {
+              'x-api-key': env.NEYNAR_API_KEY || '',
+              'x-neynar-experimental': 'true', // Filter spam accounts
+            },
+          }
+        )
+        
+        if (!neynarResponse.ok) {
+          // If that fails, try with api_key header (alternative format)
+          console.warn('x-api-key header failed, trying api_key header...')
+          neynarResponse = await fetch(
+            `https://api.neynar.com/v2/farcaster/user/bulk?fids=${profile.fid}`,
+            {
+              headers: {
+                'api_key': env.NEYNAR_API_KEY || '',
+              },
+            }
+          )
+        }
+        
+        if (!neynarResponse.ok) {
+          const errorText = await neynarResponse.text()
+          console.error('Neynar API error:', neynarResponse.status, errorText)
+          throw new Error(`Failed to fetch Neynar data: ${neynarResponse.status} - ${errorText}`)
+        }
+        
+        neynarData = await neynarResponse.json()
+        neynarUser = neynarData.users?.[0]
+      } catch (fetchError) {
+        console.error('Neynar fetch error:', fetchError)
+        throw new Error(`Failed to fetch Neynar data: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`)
+      }
       
       if (!neynarUser) {
         console.error('Neynar user not found in response:', neynarData)
@@ -131,11 +160,18 @@ export function EligibilityChecker() {
   }
 
   if (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return (
       <div className="glass p-6 rounded-2xl border border-red-500/20 bg-red-500/5">
-        <div className="flex items-center gap-3">
-          <XCircle className="w-5 h-5 text-red-400" />
-          <span className="text-red-400">Failed to check eligibility</span>
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <XCircle className="w-5 h-5 text-red-400" />
+            <span className="text-red-400 font-semibold">Failed to check eligibility</span>
+          </div>
+          <p className="text-sm text-red-300/80">{errorMessage}</p>
+          <p className="text-xs text-red-300/60">
+            Check browser console for details. Make sure NEYNAR_API_KEY is set correctly.
+          </p>
         </div>
       </div>
     )
