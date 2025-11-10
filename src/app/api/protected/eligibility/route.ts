@@ -178,22 +178,23 @@ export async function GET(request: NextRequest) {
       ] as const
       
       // Get token balance
-      tokenBalance = await publicClient.readContract({
+      const balanceResult = await publicClient.readContract({
         address: SMOLEMARU_TOKEN_ADDRESS,
         abi: balanceOfAbi,
         functionName: 'balanceOf',
         args: [userAddress as `0x${string}`],
       })
+      tokenBalance = BigInt(balanceResult as bigint | string | number)
       
       // Get token decimals (in case it's not 18)
       let tokenDecimals = TOKEN_DECIMALS
       try {
-        const decimals = await publicClient.readContract({
+        const decimalsResult = await publicClient.readContract({
           address: SMOLEMARU_TOKEN_ADDRESS,
           abi: balanceOfAbi,
           functionName: 'decimals',
         })
-        tokenDecimals = BigInt(decimals)
+        tokenDecimals = BigInt(decimalsResult as number | bigint | string)
       } catch (error) {
         console.warn('Could not fetch token decimals, assuming 18:', error)
       }
