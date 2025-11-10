@@ -186,11 +186,16 @@ export async function GET(request: NextRequest) {
     let requiredBalanceWithDecimals = BigInt(0)
     
     // Check pro badge requirement (will be part of final eligibility check)
-    console.log('🔍 Checking pro badge requirement...', { hasProBadge, verified, power_badge: neynarUser.power_badge })
+    console.log('🔍 Checking pro subscription requirement...', { 
+      hasProBadge, 
+      verified, 
+      pro_status: neynarUser.pro?.status,
+      pro: neynarUser.pro 
+    })
     if (hasProBadge) {
-      console.log('✅ Pro badge check passed')
+      console.log('✅ Pro subscription check passed - user has pro')
     } else {
-      console.log('❌ Pro badge check failed - will be included in eligibility result')
+      console.log('❌ Pro subscription check failed - user does not have pro subscription')
     }
     
     // Check token balance requirement
