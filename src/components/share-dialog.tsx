@@ -88,13 +88,6 @@ export function ShareDialog({
         })
         onClose()
       }
-
-      toast({
-        title: 'Shared on Farcaster!',
-        description: 'Your referral link has been included',
-      })
-
-      onClose()
     } catch (error) {
       toast({
         title: 'Error',
