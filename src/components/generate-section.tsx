@@ -178,8 +178,36 @@ export function GenerateSection() {
                     onClick={() => {
                       const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
                       const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
-                      const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
-                      window.open(farcasterUrl, '_blank')
+                      
+                      // Detect if we're in mobile/Farcaster app
+                      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+                      const isFarcasterApp = window.location.href.includes('farcaster') || 
+                                            window.location.href.includes('warpcast') ||
+                                            (window as any).farcaster !== undefined
+                      
+                      let farcasterUrl: string
+                      if (isMobile || isFarcasterApp) {
+                        // Use deep link for mobile/Farcaster app
+                        // Try warpcast:// first, fallback to farcaster://
+                        farcasterUrl = `warpcast://~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
+                        
+                        // Try to open native app, fallback to web if it fails
+                        const link = document.createElement('a')
+                        link.href = farcasterUrl
+                        link.style.display = 'none'
+                        document.body.appendChild(link)
+                        link.click()
+                        document.body.removeChild(link)
+                        
+                        // Fallback to web after a short delay if app doesn't open
+                        setTimeout(() => {
+                          window.open(`https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`, '_blank')
+                        }, 500)
+                      } else {
+                        // Desktop: use web URL
+                        farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
+                        window.open(farcasterUrl, '_blank')
+                      }
                     }}
                     className="glass glass-hover px-6 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors"
                   >
@@ -190,8 +218,33 @@ export function GenerateSection() {
                     onClick={() => {
                       const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
                       const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
-                      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
-                      window.open(twitterUrl, '_blank')
+                      
+                      // Detect if we're in mobile
+                      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+                      
+                      let twitterUrl: string
+                      if (isMobile) {
+                        // Use deep link for mobile apps
+                        // Try x:// first (newer), fallback to twitter://
+                        twitterUrl = `x://post?message=${encodeURIComponent(text + ' ' + url)}`
+                        
+                        // Try to open native app, fallback to web if it fails
+                        const link = document.createElement('a')
+                        link.href = twitterUrl
+                        link.style.display = 'none'
+                        document.body.appendChild(link)
+                        link.click()
+                        document.body.removeChild(link)
+                        
+                        // Fallback to web after a short delay if app doesn't open
+                        setTimeout(() => {
+                          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank')
+                        }, 500)
+                      } else {
+                        // Desktop: use web URL
+                        twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+                        window.open(twitterUrl, '_blank')
+                      }
                     }}
                     className="glass glass-hover px-6 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors"
                   >
