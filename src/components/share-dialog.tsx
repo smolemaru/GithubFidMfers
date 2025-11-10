@@ -178,13 +178,6 @@ export function ShareDialog({
         // If that fails, use web URL
         window.open(twitterUrl, '_blank')
       }
-
-      toast({
-        title: 'Shared on X!',
-        description: 'Your referral link has been included',
-      })
-
-      onClose()
     } catch (error) {
       toast({
         title: 'Error',
