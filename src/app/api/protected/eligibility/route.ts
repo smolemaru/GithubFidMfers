@@ -89,8 +89,9 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    // Log all available fields to debug
-    console.log('Neynar user data:', {
+    // Log all available fields to debug - especially check nested objects
+    console.log('Neynar user data (full JSON):', JSON.stringify(neynarUser, null, 2))
+    console.log('Neynar user data (summary):', {
       fid: neynarUser.fid,
       username: neynarUser.username,
       power_badge: neynarUser.power_badge,
@@ -102,6 +103,9 @@ export async function GET(request: NextRequest) {
       custody_address: neynarUser.custody_address,
       verifications: neynarUser.verifications,
       allFields: Object.keys(neynarUser), // Log all available fields
+      // Check nested objects that might contain badge info
+      profile: neynarUser.profile,
+      active_status: neynarUser.active_status,
       // Check all possible badge fields
       allBadgeFields: {
         power_badge: neynarUser.power_badge,
@@ -110,6 +114,9 @@ export async function GET(request: NextRequest) {
         proBadge: neynarUser.proBadge,
         verified: neynarUser.verified,
         is_verified: neynarUser.is_verified,
+        // Check if badge info is in profile or other nested objects
+        profile_power_badge: neynarUser.profile?.power_badge,
+        active_status_power_badge: neynarUser.active_status?.power_badge,
       },
     })
     
