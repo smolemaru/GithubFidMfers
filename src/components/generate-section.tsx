@@ -24,18 +24,30 @@ export function GenerateSection() {
   const [currentGeneration, setCurrentGeneration] = useState<any>(null)
   const [isGenerating, setIsGenerating] = useState(false)
 
-  const { data: userProfile, isLoading: isLoadingProfile } = useQuery({
+  const { data: userProfile, isLoading: isLoadingProfile, error: profileError } = useQuery({
     queryKey: ['userProfile'],
     queryFn: async () => {
-      const { token } = await sdk.quickAuth.getToken()
-      const response = await fetch('/api/protected/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      if (!response.ok) throw new Error('Failed to fetch profile')
-      return response.json() as Promise<UserProfile>
+      try {
+        const { token } = await sdk.quickAuth.getToken()
+        if (!token) {
+          throw new Error('No token received from SDK. Make sure manifest is signed.')
+        }
+        const response = await fetch('/api/protected/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(errorData.error || 'Failed to fetch profile')
+        }
+        return response.json() as Promise<UserProfile>
+      } catch (error) {
+        console.error('Auth error:', error)
+        throw error
+      }
     },
+    retry: false,
   })
 
   async function handleGenerate() {
@@ -87,7 +99,19 @@ export function GenerateSection() {
     return (
       <section id="generate" className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center glass p-8 rounded-2xl">
-          <p className="text-foreground/80">Please authenticate to continue</p>
+          {profileError ? (
+            <div>
+              <p className="text-red-400 mb-2">Authentication Error</p>
+              <p className="text-foreground/80 text-sm">
+                {profileError instanceof Error ? profileError.message : 'Failed to authenticate'}
+              </p>
+              <p className="text-foreground/60 text-xs mt-4">
+                Make sure the manifest is signed at: https://farcaster.xyz/~/developers/mini-apps/manifest?domain=fid-mfers.vercel.app
+              </p>
+            </div>
+          ) : (
+            <p className="text-foreground/80">Please authenticate to continue</p>
+          )}
         </div>
       </section>
     )
