@@ -5,19 +5,31 @@ import { createPublicClient, http, formatUnits } from 'viem'
 import { base } from 'viem/chains'
 
 export async function GET(request: NextRequest) {
+  console.log('🚀 Eligibility check started')
+  console.log('📋 Request headers:', {
+    hasAuth: !!request.headers.get('authorization'),
+    authPrefix: request.headers.get('authorization')?.substring(0, 20) || 'none',
+  })
+  
   try {
     const user = await getUserFromRequest(request)
     
     if (!user) {
+      console.error('❌ Unauthorized - no user found')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    console.log('✅ User authenticated:', { fid: user.fid, id: user.id })
+
     if (!env.NEYNAR_API_KEY) {
+      console.error('❌ Neynar API key not configured')
       return NextResponse.json(
         { error: 'Neynar API key not configured' },
         { status: 500 }
       )
     }
+    
+    console.log('✅ Neynar API key configured')
 
     // Fetch Neynar user data to get score and verification
     let neynarResponse
