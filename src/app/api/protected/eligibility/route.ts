@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/quickauth'
 import { env } from '@/env'
+import { createPublicClient, http, formatUnits } from 'viem'
+import { base } from 'viem/chains'
 
 export async function GET(request: NextRequest) {
   try {
@@ -108,25 +110,140 @@ export async function GET(request: NextRequest) {
     
     const verified = neynarUser.power_badge || false
     
-    // Calculate mint price based on score and verification
-    let mintPrice: string
+    // Check eligibility requirements:
+    // 1. Must have pro subscription/badge (power_badge)
+    // 2. Must hold at least 200,000 $smolemaru tokens
+    const SMOLEMARU_TOKEN_ADDRESS = '0x19d45c0497de6921d2c7f5800d279123ac36a524' as const
+    const REQUIRED_BALANCE = 200000n // 200,000 tokens (assuming 18 decimals)
+    const TOKEN_DECIMALS = 18n
     
-    if (score >= 1.0 && verified) {
-      mintPrice = '0.35'
-    } else if (score >= 0.5 && score < 1.0) {
-      mintPrice = '0.99'
-    } else if (score < 0.5) {
-      mintPrice = '3.00'
-    } else {
-      // Default to 0.99 if score is exactly 1.0 but not verified
-      mintPrice = '0.99'
+    let eligible = false
+    let tokenBalance = 0n
+    let hasProBadge = verified
+    let hasEnoughTokens = false
+    
+    // Check pro badge requirement
+    if (!hasProBadge) {
+      return NextResponse.json({
+        score,
+        verified,
+        mintPrice: '0.00',
+        eligible: false,
+        reason: 'Pro subscription/badge required',
+        hasProBadge: false,
+        hasEnoughTokens: false,
+        tokenBalance: '0',
+      })
     }
+    
+    // Check token balance requirement
+    const userAddress = neynarUser.verified_addresses?.eth_addresses?.[0]
+    if (!userAddress) {
+      return NextResponse.json({
+        score,
+        verified,
+        mintPrice: '0.00',
+        eligible: false,
+        reason: 'No verified Ethereum address found',
+        hasProBadge: true,
+        hasEnoughTokens: false,
+        tokenBalance: '0',
+      })
+    }
+    
+    try {
+      // Create public client for Base network
+      const rpcUrl = env.BASE_RPC_URL || 'https://mainnet.base.org'
+      const publicClient = createPublicClient({
+        chain: base,
+        transport: http(rpcUrl),
+      })
+      
+      // ERC-20 balanceOf function signature
+      const balanceOfAbi = [
+        {
+          constant: true,
+          inputs: [{ name: '_owner', type: 'address' }],
+          name: 'balanceOf',
+          outputs: [{ name: 'balance', type: 'uint256' }],
+          type: 'function',
+        },
+        {
+          constant: true,
+          inputs: [],
+          name: 'decimals',
+          outputs: [{ name: '', type: 'uint8' }],
+          type: 'function',
+        },
+      ] as const
+      
+      // Get token balance
+      tokenBalance = await publicClient.readContract({
+        address: SMOLEMARU_TOKEN_ADDRESS,
+        abi: balanceOfAbi,
+        functionName: 'balanceOf',
+        args: [userAddress as `0x${string}`],
+      })
+      
+      // Get token decimals (in case it's not 18)
+      let tokenDecimals = TOKEN_DECIMALS
+      try {
+        const decimals = await publicClient.readContract({
+          address: SMOLEMARU_TOKEN_ADDRESS,
+          abi: balanceOfAbi,
+          functionName: 'decimals',
+        })
+        tokenDecimals = BigInt(decimals)
+      } catch (error) {
+        console.warn('Could not fetch token decimals, assuming 18:', error)
+      }
+      
+      // Convert required balance to token units (with decimals)
+      const requiredBalanceWithDecimals = REQUIRED_BALANCE * (10n ** tokenDecimals)
+      
+      // Check if user has enough tokens
+      hasEnoughTokens = tokenBalance >= requiredBalanceWithDecimals
+      
+      if (!hasEnoughTokens) {
+        const balanceFormatted = formatUnits(tokenBalance, Number(tokenDecimals))
+        return NextResponse.json({
+          score,
+          verified,
+          mintPrice: '0.00',
+          eligible: false,
+          reason: `Insufficient $smolemaru balance. Required: 200,000, Current: ${balanceFormatted}`,
+          hasProBadge: true,
+          hasEnoughTokens: false,
+          tokenBalance: balanceFormatted,
+          requiredBalance: '200000',
+        })
+      }
+      
+      eligible = true
+    } catch (error) {
+      console.error('Error checking token balance:', error)
+      return NextResponse.json(
+        { 
+          error: 'Failed to check token balance', 
+          details: error instanceof Error ? error.message : 'Unknown error',
+          hasProBadge: true,
+          hasEnoughTokens: false,
+        },
+        { status: 500 }
+      )
+    }
+    
+    // Calculate mint price (all eligible users get same price since they meet requirements)
+    const mintPrice = '0.99'
     
     return NextResponse.json({
       score,
       verified,
       mintPrice,
       eligible: true,
+      hasProBadge: true,
+      hasEnoughTokens: true,
+      tokenBalance: formatUnits(tokenBalance, 18),
     })
   } catch (error) {
     console.error('Error checking eligibility:', error)

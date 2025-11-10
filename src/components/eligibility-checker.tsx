@@ -9,6 +9,11 @@ interface EligibilityResult {
   verified: boolean
   mintPrice: string
   eligible: boolean
+  reason?: string
+  hasProBadge?: boolean
+  hasEnoughTokens?: boolean
+  tokenBalance?: string
+  requiredBalance?: string
 }
 
 export function EligibilityChecker() {
@@ -88,37 +93,46 @@ export function EligibilityChecker() {
         
         <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
           <div>
-            <div className="text-sm text-foreground/60 mb-1">Neynar Score</div>
-            <div className="text-lg font-bold">{eligibility.score.toFixed(2)}</div>
-          </div>
-          <div>
-            <div className="text-sm text-foreground/60 mb-1">Verified Badge</div>
+            <div className="text-sm text-foreground/60 mb-1">Pro Badge</div>
             <div className="text-lg font-bold">
-              {eligibility.verified ? (
+              {eligibility.hasProBadge ? (
                 <span className="text-green-400">✓ Yes</span>
               ) : (
-                <span className="text-foreground/40">✗ No</span>
+                <span className="text-red-400">✗ No</span>
               )}
             </div>
           </div>
+          <div>
+            <div className="text-sm text-foreground/60 mb-1">$smolemaru Balance</div>
+            <div className="text-lg font-bold">
+              {eligibility.hasEnoughTokens ? (
+                <span className="text-green-400">✓ {eligibility.tokenBalance || '0'}</span>
+              ) : (
+                <span className="text-red-400">✗ {eligibility.tokenBalance || '0'}</span>
+              )}
+            </div>
+            {eligibility.requiredBalance && (
+              <div className="text-xs text-foreground/50">
+                Required: {eligibility.requiredBalance}
+              </div>
+            )}
+          </div>
         </div>
         
-        <div className="pt-4 border-t border-white/10">
-          <div className="text-sm text-foreground/60 mb-2">Pricing Tier:</div>
-          {eligibility.score >= 1.0 && eligibility.verified ? (
-            <div className="text-sm text-green-400">
-              ✓ Premium Tier - Score 1.0+ with verified badge
+        {!eligibility.eligible && eligibility.reason && (
+          <div className="pt-4 border-t border-white/10">
+            <div className="text-sm text-red-400 font-semibold mb-1">Not Eligible</div>
+            <div className="text-xs text-red-300/80">{eligibility.reason}</div>
+          </div>
+        )}
+        
+        {eligibility.eligible && (
+          <div className="pt-4 border-t border-white/10">
+            <div className="text-sm text-green-400 font-semibold">
+              ✓ Eligible - Pro badge and 200,000+ $smolemaru required
             </div>
-          ) : eligibility.score >= 0.5 ? (
-            <div className="text-sm text-primary">
-              Standard Tier - Score 0.5-0.99
-            </div>
-          ) : (
-            <div className="text-sm text-yellow-400">
-              Basic Tier - Score below 0.5
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   )

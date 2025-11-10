@@ -175,39 +175,26 @@ export function GenerateSection() {
                 <p className="text-sm text-foreground/60 mb-4">Share FIDMfers coming</p>
                 <div className="flex gap-3 justify-center">
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
                       const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
                       
-                      // Detect if we're in mobile/Farcaster app
-                      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-                      const isFarcasterApp = window.location.href.includes('farcaster') || 
-                                            window.location.href.includes('warpcast') ||
-                                            (window as any).farcaster !== undefined
-                      
-                      let farcasterUrl: string
-                      if (isMobile || isFarcasterApp) {
-                        // Use deep link for mobile/Farcaster app
-                        // Try warpcast:// first, fallback to farcaster://
-                        farcasterUrl = `warpcast://~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
-                        
-                        // Try to open native app, fallback to web if it fails
-                        const link = document.createElement('a')
-                        link.href = farcasterUrl
-                        link.style.display = 'none'
-                        document.body.appendChild(link)
-                        link.click()
-                        document.body.removeChild(link)
-                        
-                        // Fallback to web after a short delay if app doesn't open
-                        setTimeout(() => {
-                          window.open(`https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`, '_blank')
-                        }, 500)
-                      } else {
-                        // Desktop: use web URL
-                        farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
-                        window.open(farcasterUrl, '_blank')
+                      // Check if we're in Farcaster app (use SDK's openUrl method)
+                      try {
+                        const context = await sdk.context
+                        if (context.location?.type === 'cast_embed' || context.location?.type === 'channel') {
+                          // In Farcaster app - use SDK's openUrl to open in-app
+                          const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
+                          await sdk.actions.openUrl(farcasterUrl)
+                          return
+                        }
+                      } catch (error) {
+                        console.log('Not in Farcaster app context, using web URL')
                       }
+                      
+                      // Not in Farcaster app or SDK failed - use web URL
+                      const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
+                      window.open(farcasterUrl, '_blank')
                     }}
                     className="glass glass-hover px-6 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors"
                   >
@@ -215,36 +202,26 @@ export function GenerateSection() {
                     Share on Farcaster
                   </button>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
                       const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
                       
-                      // Detect if we're in mobile
-                      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-                      
-                      let twitterUrl: string
-                      if (isMobile) {
-                        // Use deep link for mobile apps
-                        // Try x:// first (newer), fallback to twitter://
-                        twitterUrl = `x://post?message=${encodeURIComponent(text + ' ' + url)}`
-                        
-                        // Try to open native app, fallback to web if it fails
-                        const link = document.createElement('a')
-                        link.href = twitterUrl
-                        link.style.display = 'none'
-                        document.body.appendChild(link)
-                        link.click()
-                        document.body.removeChild(link)
-                        
-                        // Fallback to web after a short delay if app doesn't open
-                        setTimeout(() => {
-                          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank')
-                        }, 500)
-                      } else {
-                        // Desktop: use web URL
-                        twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
-                        window.open(twitterUrl, '_blank')
+                      // Check if we're in Farcaster app (use SDK's openUrl method)
+                      try {
+                        const context = await sdk.context
+                        if (context.location?.type === 'cast_embed' || context.location?.type === 'channel') {
+                          // In Farcaster app - use SDK's openUrl to open in-app
+                          const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+                          await sdk.actions.openUrl(twitterUrl)
+                          return
+                        }
+                      } catch (error) {
+                        console.log('Not in Farcaster app context, using web URL')
                       }
+                      
+                      // Not in Farcaster app or SDK failed - use web URL
+                      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+                      window.open(twitterUrl, '_blank')
                     }}
                     className="glass glass-hover px-6 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors"
                   >
