@@ -146,19 +146,32 @@ export async function GET(request: NextRequest) {
     }
     
     // Check multiple possible fields for pro badge/power badge
-    // Neynar API might use different field names
+    // Neynar API might use different field names or value types
+    // Handle boolean, string, number, and truthy values
+    const checkBadgeValue = (value: any): boolean => {
+      if (value === true || value === 1 || value === 'true' || value === '1') return true
+      if (value === false || value === 0 || value === 'false' || value === '0' || value === null || value === undefined) return false
+      return !!value // Truthy check for other values
+    }
+    
     const verified = 
-      neynarUser.power_badge || 
-      neynarUser.powerBadge || 
-      neynarUser.pro_badge || 
-      neynarUser.proBadge || 
+      checkBadgeValue(neynarUser.power_badge) || 
+      checkBadgeValue(neynarUser.powerBadge) || 
+      checkBadgeValue(neynarUser.pro_badge) || 
+      checkBadgeValue(neynarUser.proBadge) ||
+      checkBadgeValue(neynarUser.verified) ||
+      checkBadgeValue(neynarUser.is_verified) ||
       false
     
     console.log('Pro badge check - all fields:', {
       power_badge: neynarUser.power_badge,
+      power_badge_type: typeof neynarUser.power_badge,
       powerBadge: neynarUser.powerBadge,
+      powerBadge_type: typeof neynarUser.powerBadge,
       pro_badge: neynarUser.pro_badge,
       proBadge: neynarUser.proBadge,
+      verified: neynarUser.verified,
+      is_verified: neynarUser.is_verified,
       finalVerified: verified,
     })
     
