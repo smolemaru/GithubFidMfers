@@ -134,6 +134,8 @@ export async function GET(request: NextRequest) {
     let tokenBalance = BigInt(0)
     let hasProBadge = verified
     let hasEnoughTokens = false
+    let tokenDecimals = TOKEN_DECIMALS
+    let requiredBalanceWithDecimals = BigInt(0)
     
     // Check pro badge requirement
     if (!hasProBadge) {
@@ -234,7 +236,6 @@ export async function GET(request: NextRequest) {
       ] as const
       
       // Get token decimals first (in case it's not 18)
-      let tokenDecimals = TOKEN_DECIMALS
       try {
         const decimalsResult = await publicClient.readContract({
           address: SMOLEMARU_TOKEN_ADDRESS,
@@ -245,10 +246,11 @@ export async function GET(request: NextRequest) {
         console.log('Token decimals:', tokenDecimals.toString())
       } catch (error) {
         console.warn('Could not fetch token decimals, assuming 18:', error)
+        tokenDecimals = TOKEN_DECIMALS
       }
       
       // Convert required balance to token units (with decimals)
-      const requiredBalanceWithDecimals = REQUIRED_BALANCE * (BigInt(10) ** tokenDecimals)
+      requiredBalanceWithDecimals = REQUIRED_BALANCE * (BigInt(10) ** tokenDecimals)
       
       // Check token balance for ALL addresses and sum them up
       let totalBalance = BigInt(0)
