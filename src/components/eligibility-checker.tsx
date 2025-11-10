@@ -183,7 +183,12 @@ export function EligibilityChecker() {
         {!eligibility.eligible && eligibility.reason && (
           <div className="pt-4 border-t border-white/10">
             <div className="text-sm text-red-400 font-semibold mb-1">Not Eligible</div>
-            <div className="text-xs text-red-300/80">{eligibility.reason}</div>
+            <div className="text-xs text-red-300/80 mb-2">{eligibility.reason}</div>
+            {eligibility.note && (
+              <div className="text-xs text-foreground/60 mt-2 p-2 bg-white/5 rounded">
+                💡 {eligibility.note}
+              </div>
+            )}
           </div>
         )}
         
