@@ -69,9 +69,9 @@ export function Hero() {
               className="glass px-8 py-6 rounded-2xl border border-white/5 min-w-[160px]"
             >
               <div className="text-4xl font-black bg-gradient-to-br from-primary to-purple-400 bg-clip-text text-transparent mb-2">
-                0.80
+                0.99
               </div>
-              <div className="text-sm text-foreground/60 font-medium">0.99 usdc</div>
+              <div className="text-sm text-foreground/60 font-medium">usdc</div>
             </motion.div>
             
             <motion.div

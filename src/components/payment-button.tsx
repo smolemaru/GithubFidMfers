@@ -3,14 +3,81 @@
 import { useState } from 'react'
 import { parseEther, parseUnits } from 'viem'
 import { Loader2, Wallet } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { sdk } from '@/lib/sdk'
 import { env } from '@/env'
 
 interface PaymentButtonProps {
   onSuccess: () => void
 }
 
+function getMintPrice(score: number, verified: boolean): string {
+  if (score >= 1.0 && verified) {
+    return '0.35'
+  } else if (score >= 0.5 && score < 1.0) {
+    return '0.99'
+  } else if (score < 0.5) {
+    return '3.00'
+  } else {
+    // Default to 0.99 if score is exactly 1.0 but not verified
+    return '0.99'
+  }
+}
+
 export function PaymentButton({ onSuccess }: PaymentButtonProps) {
   const [isProcessing, setIsProcessing] = useState(false)
+  
+  // Get eligibility to determine price
+  const { data: eligibility } = useQuery({
+    queryKey: ['eligibility'],
+    queryFn: async () => {
+      const { token } = await sdk.quickAuth.getToken()
+      
+      const profileResponse = await fetch('/api/protected/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      
+      if (!profileResponse.ok) {
+        throw new Error('Failed to fetch profile')
+      }
+      
+      const profile = await profileResponse.json()
+      
+      const neynarResponse = await fetch(
+        `https://api.neynar.com/v2/farcaster/user/bulk?fids=${profile.fid}`,
+        {
+          headers: {
+            'api_key': env.NEYNAR_API_KEY || '',
+          },
+        }
+      )
+      
+      if (!neynarResponse.ok) {
+        throw new Error('Failed to fetch Neynar data')
+      }
+      
+      const neynarData = await neynarResponse.json()
+      const neynarUser = neynarData.users[0]
+      
+      if (!neynarUser) {
+        throw new Error('User not found')
+      }
+      
+      const score = neynarUser.neynar_score || neynarUser.score || 0
+      const verified = neynarUser.power_badge || false
+      
+      return {
+        score,
+        verified,
+        mintPrice: getMintPrice(score, verified),
+      }
+    },
+    retry: false,
+  })
+  
+  const mintPrice = eligibility?.mintPrice || '0.99'
 
   async function handlePayment() {
     setIsProcessing(true)
@@ -70,7 +137,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
       }
 
       // USDC has 6 decimals
-      const amountInUSDC = parseUnits(env.NEXT_PUBLIC_GENERATION_PRICE || '0.99', 6)
+      const amountInUSDC = parseUnits(mintPrice, 6)
 
       // ERC20 transfer function signature
       const transferData = `0xa9059cbb${
@@ -99,7 +166,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
         },
         body: JSON.stringify({
           txHash,
-          amount: env.NEXT_PUBLIC_GENERATION_PRICE || '0.99',
+          amount: mintPrice,
         }),
       })
 
@@ -119,7 +186,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
   return (
     <button
       onClick={handlePayment}
-      disabled={isProcessing}
+      disabled={isProcessing || !eligibility}
       className="glass glass-hover px-8 py-4 rounded-full text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 mx-auto"
     >
       {isProcessing ? (
@@ -130,7 +197,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
       ) : (
         <>
           <Wallet className="w-5 h-5" />
-          Pay {env.NEXT_PUBLIC_GENERATION_PRICE} USDC
+          Pay {mintPrice} USDC
         </>
       )}
     </button>

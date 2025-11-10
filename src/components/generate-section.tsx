@@ -6,6 +6,7 @@ import { sdk } from '@/lib/sdk'
 import { Loader2, Sparkles } from 'lucide-react'
 import { PaymentButton } from './payment-button'
 import { GenerationResult } from './generation-result'
+import { EligibilityChecker } from './eligibility-checker'
 import { useQuery } from '@tanstack/react-query'
 import { env } from '@/env'
 
@@ -154,12 +155,13 @@ export function GenerateSection() {
           </div>
 
           {!hasPayment ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8 space-y-6">
+              <EligibilityChecker />
               <div className="mb-6">
                 <Sparkles className="w-16 h-16 mx-auto text-primary mb-4" />
                 <h3 className="text-2xl font-bold mb-2">Ready to Create?</h3>
                 <p className="text-foreground/70 mb-1">
-                  {env.NEXT_PUBLIC_GENERATION_PRICE} USDC for 2 generations
+                  Price varies by Neynar score and verification status
                 </p>
                 <p className="text-sm text-foreground/50">
                   Second generation in case you want to try again
