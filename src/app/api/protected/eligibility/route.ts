@@ -211,9 +211,34 @@ export async function GET(request: NextRequest) {
         transport: http(rpcUrl),
       })
       
+      // Verify RPC connection by getting latest block
+      try {
+        const blockNumber = await publicClient.getBlockNumber()
+        console.log('RPC connection verified. Latest block:', blockNumber.toString())
+      } catch (error) {
+        console.error('RPC connection failed:', error)
+        throw new Error('Failed to connect to Base RPC')
+      }
+      
+      // Verify token contract exists
+      try {
+        const code = await publicClient.getBytecode({
+          address: SMOLEMARU_TOKEN_ADDRESS.toLowerCase() as `0x${string}`,
+        })
+        if (!code || code === '0x') {
+          console.error('Token contract not found at address:', SMOLEMARU_TOKEN_ADDRESS)
+          throw new Error('Token contract not found')
+        }
+        console.log('Token contract verified at:', SMOLEMARU_TOKEN_ADDRESS)
+      } catch (error) {
+        console.error('Failed to verify token contract:', error)
+        throw new Error('Token contract verification failed')
+      }
+      
       console.log('Checking token balance:', {
         tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
         addressesToCheck: uniqueAddresses.length,
+        addresses: uniqueAddresses,
         requiredBalance: '200000',
       })
       
