@@ -314,7 +314,8 @@ export async function GET(request: NextRequest) {
       // Convert required balance to token units (with decimals)
       requiredBalanceWithDecimals = REQUIRED_BALANCE * (BigInt(10) ** tokenDecimals)
       
-      // Check token balance for ALL addresses and sum them up
+      // Check token balance for ALL Base ETH addresses and sum them up
+      console.log('💰 Starting balance check for', uniqueAddresses.length, 'Base ETH wallet(s)...')
       let totalBalance = BigInt(0)
       let addressWithBalance: string | null = null
       
@@ -419,8 +420,13 @@ export async function GET(request: NextRequest) {
       }
       
       eligible = true
+      console.log('✅ Token balance check completed successfully. Eligible:', eligible)
     } catch (error) {
-      console.error('Error checking token balance:', error)
+      console.error('❌ ERROR checking token balance:', error)
+      if (error instanceof Error) {
+        console.error('Error message:', error.message)
+        console.error('Error stack:', error.stack)
+      }
       return NextResponse.json(
         { 
           error: 'Failed to check token balance', 
