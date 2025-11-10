@@ -25,9 +25,14 @@ export async function verifyQuickAuthToken(token: string) {
       return { fid: null, error: 'Invalid token payload' }
     }
     
-    // Check issuer
-    if (payload.iss !== 'https://auth.farcaster.xyz') {
+    // Check issuer (allow mock tokens for development)
+    if (payload.iss !== 'https://auth.farcaster.xyz' && token !== 'mock_token_for_development') {
       return { fid: null, error: 'Invalid issuer' }
+    }
+    
+    // For mock tokens, return a demo FID
+    if (token === 'mock_token_for_development') {
+      return { fid: '12345', error: null }
     }
     
     // Check audience (should match your domain)

@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { env } from '@/env'
+import { getUserFromRequest } from '@/lib/quickauth'
 
 export async function POST(request: NextRequest) {
-  const fid = request.headers.get('x-user-fid')
+  // Get user from JWT token
+  const user = await getUserFromRequest(request)
   
-  if (!fid) {
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
-    const user = await db.user.findUnique({
-      where: { fid: parseInt(fid) },
+    // Get user with payments
+    const userWithPayments = await db.user.findUnique({
+      where: { id: user.id },
       include: {
         payments: {
           where: { status: 'CONFIRMED' },
@@ -20,12 +23,12 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    if (!user) {
+    if (!userWithPayments) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Check if user has available generations
-    const availablePayment = user.payments.find(p => p.generationsUsed < 2)
+    const availablePayment = userWithPayments.payments.find(p => p.generationsUsed < 2)
 
     if (!availablePayment) {
       return NextResponse.json(
@@ -36,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     // Fetch user's Farcaster data
     const neynarResponse = await fetch(
-      `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`,
+      `https://api.neynar.com/v2/farcaster/user/bulk?fids=${user.fid}`,
       {
         headers: {
           'api_key': env.NEYNAR_API_KEY || '',

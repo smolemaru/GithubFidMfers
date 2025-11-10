@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { env } from '@/env'
+import { getUserFromRequest } from '@/lib/quickauth'
 
 export async function POST(request: NextRequest) {
-  const fid = request.headers.get('x-user-fid')
+  // Get user from JWT token
+  const user = await getUserFromRequest(request)
   
-  if (!fid) {
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -30,15 +32,6 @@ export async function POST(request: NextRequest) {
         { error: 'Payment already recorded' },
         { status: 400 }
       )
-    }
-
-    // Get or create user
-    const user = await db.user.findUnique({
-      where: { fid: parseInt(fid) },
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Create payment record

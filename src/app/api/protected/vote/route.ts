@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { getUserFromRequest } from '@/lib/quickauth'
 
 export async function POST(request: NextRequest) {
-  const fid = request.headers.get('x-user-fid')
+  // Get user from JWT token
+  const user = await getUserFromRequest(request)
   
-  if (!fid) {
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -19,19 +21,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const user = await db.user.findUnique({
-      where: { fid: parseInt(fid) },
+    // Get user with votes
+    const userWithVotes = await db.user.findUnique({
+      where: { id: user.id },
       include: {
         votes: true,
       },
     })
 
-    if (!user) {
+    if (!userWithVotes) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Check if user has already voted (max 2 votes per user)
-    if (user.votes.length >= 2) {
+    if (userWithVotes.votes.length >= 2) {
       return NextResponse.json(
         { error: 'You have used all your votes (2 max)' },
         { status: 400 }
@@ -73,9 +76,15 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // Get updated vote count
+    const updatedUser = await db.user.findUnique({
+      where: { id: user.id },
+      include: { votes: true },
+    })
+
     return NextResponse.json({
       success: true,
-      votesRemaining: 2 - (user.votes.length + 1),
+      votesRemaining: 2 - (updatedUser?.votes.length || 0),
     })
   } catch (error) {
     console.error('Error voting:', error)
@@ -87,9 +96,10 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const fid = request.headers.get('x-user-fid')
+  // Get user from JWT token
+  const user = await getUserFromRequest(request)
   
-  if (!fid) {
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -102,14 +112,6 @@ export async function DELETE(request: NextRequest) {
         { error: 'Missing generationId' },
         { status: 400 }
       )
-    }
-
-    const user = await db.user.findUnique({
-      where: { fid: parseInt(fid) },
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Delete vote
