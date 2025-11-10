@@ -75,8 +75,9 @@ PINATA_JWT=your_pinata_jwt_here
 # Get from https://app.pinata.cloud
 
 # RPC (REQUIRED for blockchain)
-BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/_cJQ3B3yIO5msQ-IN-z239yz8V4WxZs6
-NEXT_PUBLIC_BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/_cJQ3B3yIO5msQ-IN-z239yz8V4WxZs6
+BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY
+NEXT_PUBLIC_BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY
+# Get from https://dashboard.alchemy.com
 
 # App Config (REQUIRED)
 NEXT_PUBLIC_APP_URL=https://github-fid-mfers.vercel.app
