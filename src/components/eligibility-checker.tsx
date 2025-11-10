@@ -65,7 +65,16 @@ export function EligibilityChecker() {
       
       // Get Neynar score (default to 0 if not available)
       // Neynar score might be in different fields, try multiple
-      const score = neynarUser.neynar_score || neynarUser.score || 0
+      // If score is not available, calculate a rough estimate based on follower count
+      let score = neynarUser.neynar_score || neynarUser.score || 0
+      
+      // If no score available, use a rough estimate based on followers
+      // This is a fallback - real Neynar score should be available in neynar_score field
+      if (score === 0 && neynarUser.follower_count) {
+        // Rough estimate: 1000 followers = 0.1 score, 5000 = 0.5, 10000 = 1.0
+        score = Math.min(neynarUser.follower_count / 10000, 1.0)
+      }
+      
       const verified = neynarUser.power_badge || false
       
       // Calculate mint price based on score and verification

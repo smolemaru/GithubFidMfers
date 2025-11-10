@@ -55,10 +55,6 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
       )
       
       if (!neynarResponse.ok) {
-        throw new Error('Failed to fetch Neynar data')
-      }
-      
-      if (!neynarResponse.ok) {
         const errorText = await neynarResponse.text()
         console.error('Neynar API error:', neynarResponse.status, errorText)
         throw new Error(`Failed to fetch Neynar data: ${neynarResponse.status}`)
