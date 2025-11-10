@@ -214,10 +214,10 @@ export async function GET(request: NextRequest) {
       // Verify RPC connection by getting latest block
       try {
         const blockNumber = await publicClient.getBlockNumber()
-        console.log('RPC connection verified. Latest block:', blockNumber.toString())
+        console.log('✅ RPC connection verified. Latest block:', blockNumber.toString())
       } catch (error) {
-        console.error('RPC connection failed:', error)
-        throw new Error('Failed to connect to Base RPC')
+        console.error('❌ RPC connection failed:', error)
+        throw new Error(`Failed to connect to Base RPC: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }
       
       // Verify token contract exists
@@ -226,13 +226,13 @@ export async function GET(request: NextRequest) {
           address: SMOLEMARU_TOKEN_ADDRESS.toLowerCase() as `0x${string}`,
         })
         if (!code || code === '0x') {
-          console.error('Token contract not found at address:', SMOLEMARU_TOKEN_ADDRESS)
-          throw new Error('Token contract not found')
+          console.error('❌ Token contract not found at address:', SMOLEMARU_TOKEN_ADDRESS)
+          throw new Error('Token contract not found at this address on Base network')
         }
-        console.log('Token contract verified at:', SMOLEMARU_TOKEN_ADDRESS)
+        console.log('✅ Token contract verified at:', SMOLEMARU_TOKEN_ADDRESS)
       } catch (error) {
-        console.error('Failed to verify token contract:', error)
-        throw new Error('Token contract verification failed')
+        console.error('❌ Failed to verify token contract:', error)
+        throw new Error(`Token contract verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }
       
       console.log('Checking token balance:', {
@@ -287,7 +287,7 @@ export async function GET(request: NextRequest) {
         try {
           // Normalize address to lowercase for consistency
           const normalizedAddress = address.toLowerCase() as `0x${string}`
-          console.log('Checking token balance for address:', normalizedAddress)
+          console.log('🔍 Checking token balance for address:', normalizedAddress)
           
           // Try reading contract with proper address format
           const balanceResult = await publicClient.readContract({
@@ -299,9 +299,10 @@ export async function GET(request: NextRequest) {
           
           const addressBalance = BigInt(balanceResult as bigint | string | number)
           const formattedBalance = formatUnits(addressBalance, Number(tokenDecimals))
-          console.log(`Balance for ${normalizedAddress}:`, {
+          console.log(`💰 Balance for ${normalizedAddress}:`, {
             raw: addressBalance.toString(),
             formatted: formattedBalance,
+            hasBalance: addressBalance > 0,
           })
           
           if (addressBalance > 0) {
@@ -309,20 +310,34 @@ export async function GET(request: NextRequest) {
             if (!addressWithBalance) {
               addressWithBalance = normalizedAddress
             }
+            console.log(`✅ Found balance at ${normalizedAddress}: ${formattedBalance}`)
+          } else {
+            console.log(`ℹ️  No balance found at ${normalizedAddress}`)
           }
         } catch (error) {
-          console.error(`Failed to check balance for ${address}:`, error)
+          console.error(`❌ Failed to check balance for ${address}:`, error)
           // Log the full error for debugging
           if (error instanceof Error) {
-            console.error('Error details:', error.message, error.stack)
+            console.error('Error details:', {
+              message: error.message,
+              stack: error.stack,
+              name: error.name,
+            })
           }
         }
       }
       
       tokenBalance = totalBalance
-      console.log('Total token balance across all addresses:', tokenBalance.toString())
+      console.log('📊 Total token balance across all addresses:', {
+        raw: tokenBalance.toString(),
+        formatted: formatUnits(tokenBalance, Number(tokenDecimals)),
+        addressesChecked: uniqueAddresses.length,
+      })
       if (addressWithBalance) {
-        console.log('Address with balance:', addressWithBalance)
+        console.log('✅ Address with balance found:', addressWithBalance)
+      } else {
+        console.log('⚠️  No balance found in any checked address')
+        console.log('💡 Tip: Make sure the wallet holding $smolemaru is verified on Farcaster')
       }
       
       // Check if user has enough tokens
