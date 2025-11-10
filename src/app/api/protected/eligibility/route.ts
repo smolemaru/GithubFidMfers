@@ -150,7 +150,9 @@ export async function GET(request: NextRequest) {
     let requiredBalanceWithDecimals = BigInt(0)
     
     // Check pro badge requirement
+    console.log('🔍 Checking pro badge requirement...', { hasProBadge, verified, power_badge: neynarUser.power_badge })
     if (!hasProBadge) {
+      console.log('❌ Pro badge check failed - returning early')
       return NextResponse.json({
         score,
         verified,
@@ -162,6 +164,7 @@ export async function GET(request: NextRequest) {
         tokenBalance: '0',
       })
     }
+    console.log('✅ Pro badge check passed')
     
     // Check token balance requirement
     // Collect ALL verified addresses to check
