@@ -149,16 +149,12 @@ export async function GET(request: NextRequest) {
     let tokenDecimals = TOKEN_DECIMALS
     let requiredBalanceWithDecimals = BigInt(0)
     
-    // Check pro badge requirement
+    // Check pro badge requirement (will be part of final eligibility check)
     console.log('🔍 Checking pro badge requirement...', { hasProBadge, verified, power_badge: neynarUser.power_badge })
-    
-    // TEMPORARILY DISABLED: Allow balance check even without pro badge for testing
-    // TODO: Re-enable pro badge requirement after testing
-    if (!hasProBadge) {
-      console.log('⚠️  Pro badge check failed, but continuing to check token balance for testing')
-      // Don't return early - continue to token balance check
-    } else {
+    if (hasProBadge) {
       console.log('✅ Pro badge check passed')
+    } else {
+      console.log('❌ Pro badge check failed - will be included in eligibility result')
     }
     
     // Check token balance requirement
@@ -420,8 +416,42 @@ export async function GET(request: NextRequest) {
         })
       }
       
-      eligible = true
-      console.log('✅ Token balance check completed successfully. Eligible:', eligible)
+      // Final eligibility check: must have BOTH pro badge AND enough tokens
+      eligible = hasProBadge && hasEnoughTokens
+      
+      console.log('✅ Token balance check completed successfully')
+      console.log('📊 Final eligibility check:', {
+        hasProBadge,
+        hasEnoughTokens,
+        eligible,
+        tokenBalance: formatUnits(tokenBalance, Number(tokenDecimals)),
+        requiredBalance: formatUnits(requiredBalanceWithDecimals, Number(tokenDecimals)),
+      })
+      
+      if (!eligible) {
+        const reasons: string[] = []
+        if (!hasProBadge) {
+          reasons.push('Pro subscription/badge required')
+        }
+        if (!hasEnoughTokens) {
+          reasons.push(`Insufficient $smolemaru balance (Required: ${formatUnits(requiredBalanceWithDecimals, Number(tokenDecimals))}, Current: ${formatUnits(tokenBalance, Number(tokenDecimals))})`)
+        }
+        
+        return NextResponse.json({
+          score,
+          verified,
+          mintPrice: '1000000', // 1m USDC if not eligible
+          eligible: false,
+          reason: reasons.join('. '),
+          hasProBadge,
+          hasEnoughTokens,
+          tokenBalance: formatUnits(tokenBalance, Number(tokenDecimals)),
+          requiredBalance: formatUnits(requiredBalanceWithDecimals, Number(tokenDecimals)),
+          tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
+          addressesChecked: uniqueAddresses,
+          note: 'If your wallet holding $smolemaru is not in the verified addresses list, please verify it on Farcaster by connecting it to your account',
+        })
+      }
     } catch (error) {
       console.error('❌ ERROR checking token balance:', error)
       if (error instanceof Error) {
