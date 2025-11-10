@@ -160,7 +160,7 @@ export function GenerateSection() {
               <EligibilityChecker />
               <div className="mb-6">
                 <Sparkles className="w-16 h-16 mx-auto text-primary mb-4" />
-                <h3 className="text-2xl font-bold mb-2">Ready to Create?</h3>
+                <h3 className="text-2xl font-bold mb-2">Ready to Mint?</h3>
                 <p className="text-foreground/70 mb-1">
                   Price varies by Neynar score and verification status
                 </p>

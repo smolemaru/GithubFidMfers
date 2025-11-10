@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         score,
         verified,
-        mintPrice: '0.00',
+        mintPrice: '1000000', // 1m USDC if not eligible
         eligible: false,
         reason: 'Pro subscription/badge required',
         hasProBadge: false,
@@ -306,7 +306,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           score,
           verified,
-          mintPrice: '0.00',
+          mintPrice: '1000000', // 1m USDC if not eligible
           eligible: false,
           reason: `Insufficient $smolemaru balance. Required: 200,000, Current: ${tokenBalanceFormatted}`,
           hasProBadge: true,

@@ -90,12 +90,22 @@ export function EligibilityChecker() {
             <CheckCircle2 className="w-5 h-5 text-green-400" />
             <span className="font-semibold">Eligibility Status</span>
           </div>
-          <div className="text-right">
-            <div className="text-2xl font-black text-primary">
-              {eligibility.mintPrice} USDC
+          {eligibility.eligible && (
+            <div className="text-right">
+              <div className="text-2xl font-black text-primary">
+                {eligibility.mintPrice} USDC
+              </div>
+              <div className="text-xs text-foreground/60">Mint Price</div>
             </div>
-            <div className="text-xs text-foreground/60">Mint Price</div>
-          </div>
+          )}
+          {!eligibility.eligible && (
+            <div className="text-right">
+              <div className="text-2xl font-black text-red-400">
+                1m USDC
+              </div>
+              <div className="text-xs text-foreground/60">Mint Price</div>
+            </div>
+          )}
         </div>
         
         <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
