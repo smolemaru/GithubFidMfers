@@ -165,27 +165,35 @@ export async function GET(request: NextRequest) {
     
     // Check token balance requirement
     // Collect ALL verified addresses to check
+    console.log('🔍 Collecting addresses to check for token balance...')
     const addressesToCheck: string[] = []
     
     // Add verified addresses
     if (neynarUser.verified_addresses?.eth_addresses) {
+      console.log('📝 Adding verified_addresses.eth_addresses:', neynarUser.verified_addresses.eth_addresses)
       addressesToCheck.push(...neynarUser.verified_addresses.eth_addresses)
     }
     
     // Add verifications (these are usually the user's wallets)
     if (neynarUser.verifications) {
       const ethVerifications = neynarUser.verifications.filter((v: string) => v.startsWith('0x'))
+      console.log('📝 Adding verifications (ETH):', ethVerifications)
       addressesToCheck.push(...ethVerifications)
     }
     
     // Add custody address (last resort - this is the Farcaster custody wallet)
     if (neynarUser.custody_address) {
+      console.log('📝 Adding custody_address:', neynarUser.custody_address)
       addressesToCheck.push(neynarUser.custody_address)
     }
     
-    // Remove duplicates
-    const uniqueAddresses = [...new Set(addressesToCheck)]
-    console.log('All addresses to check for token balance:', uniqueAddresses)
+    // Remove duplicates and normalize to lowercase
+    const uniqueAddresses = [...new Set(addressesToCheck.map(a => a.toLowerCase()))]
+    console.log('✅ All unique addresses to check for token balance:', uniqueAddresses)
+    
+    if (uniqueAddresses.length === 0) {
+      console.warn('⚠️  No addresses found to check!')
+    }
     
     if (uniqueAddresses.length === 0) {
       console.error('No Ethereum address found for user:', {
