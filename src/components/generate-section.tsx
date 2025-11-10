@@ -178,31 +178,14 @@ export function GenerateSection() {
                     onClick={async () => {
                       const text = 'FIDMfers are coming to Base!\n\nArtistxAi fusion, social experiment and personilised fun in alpha 🤓'
                       const url = env.NEXT_PUBLIC_APP_URL || 'https://fid-mfers.vercel.app'
+                      const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
                       
-                      // Check if we're in Farcaster app - use SDK to compose cast directly
+                      // Use SDK's openUrl which opens in-app browser if in Farcaster app
                       try {
-                        const context = await sdk.context
-                        // If in Farcaster app, use SDK's openUrl which opens in-app browser
-                        if (context.location?.type === 'cast_embed' || 
-                            context.location?.type === 'channel' || 
-                            context.location?.type === 'cast_share') {
-                          // Use warpcast:// protocol to open compose in-app
-                          const composeUrl = `warpcast://~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
-                          await sdk.actions.openUrl(composeUrl)
-                          return
-                        }
+                        await sdk.actions.openUrl(farcasterUrl)
                       } catch (error) {
-                        console.log('SDK context check failed:', error)
-                      }
-                      
-                      // Fallback: try to detect if we're in Farcaster app by checking window
-                      try {
-                        // Try to use SDK's openUrl which should work in Farcaster app
-                        const composeUrl = `warpcast://~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
-                        await sdk.actions.openUrl(composeUrl)
-                      } catch (error) {
-                        // If that fails, use web URL
-                        const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`
+                        console.log('SDK openUrl failed, using window.open:', error)
+                        // Fallback to window.open if SDK fails
                         window.open(farcasterUrl, '_blank')
                       }
                     }}

@@ -138,19 +138,24 @@ export async function GET(request: NextRequest) {
     
     // Check token balance requirement
     // Try multiple sources for user's wallet address
+    // Priority: verified_addresses > verifications > custody_address
     let userAddress = neynarUser.verified_addresses?.eth_addresses?.[0]
     
-    // If no verified address, try custody address or verifications
-    if (!userAddress) {
-      userAddress = neynarUser.custody_address
-    }
-    
-    // If still no address, try verifications array
+    // If no verified address, try verifications array (these are usually the user's wallets)
     if (!userAddress && neynarUser.verifications && neynarUser.verifications.length > 0) {
       // Verifications are usually in format: ["0x..."]
       const ethVerifications = neynarUser.verifications.filter((v: string) => v.startsWith('0x'))
       if (ethVerifications.length > 0) {
         userAddress = ethVerifications[0]
+        console.log('Using verification address:', userAddress)
+      }
+    }
+    
+    // If still no address, try custody address (last resort - this is the Farcaster custody wallet)
+    if (!userAddress) {
+      userAddress = neynarUser.custody_address
+      if (userAddress) {
+        console.log('Using custody address:', userAddress)
       }
     }
     
@@ -216,14 +221,21 @@ export async function GET(request: NextRequest) {
         },
       ] as const
       
-      // Get token balance
+      // Get token balance - try with the user address
+      console.log('Reading token balance from contract:', {
+        contract: SMOLEMARU_TOKEN_ADDRESS,
+        userAddress: userAddress,
+      })
+      
       const balanceResult = await publicClient.readContract({
         address: SMOLEMARU_TOKEN_ADDRESS,
         abi: balanceOfAbi,
         functionName: 'balanceOf',
         args: [userAddress as `0x${string}`],
       })
+      
       tokenBalance = BigInt(balanceResult as bigint | string | number)
+      console.log('Raw balance result:', balanceResult, 'Converted to BigInt:', tokenBalance.toString())
       
       // Get token decimals (in case it's not 18)
       let tokenDecimals = TOKEN_DECIMALS
