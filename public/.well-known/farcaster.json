@@ -32,6 +32,9 @@
     "ogDescription": "AI-powered NFT generator for Farcaster users. Mint your unique FID MFER on Base for 0.99 USDC.",
     "ogImageUrl": "https://fid-mfers.vercel.app/og-image.png",
     "castShareUrl": "https://fid-mfers.vercel.app"
+  },
+  "baseBuilder": {
+    "ownerAddress": "0x00fb4a6aB402a201192eF3325C76149F39C3a235"
   }
 }
 
