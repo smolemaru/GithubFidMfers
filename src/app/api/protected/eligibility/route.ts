@@ -342,6 +342,15 @@ export async function GET(request: NextRequest) {
         decimals: tokenDecimals.toString(),
       })
       
+      // Log detailed information about addresses checked
+      console.log('Addresses checked details:', {
+        verified_addresses: neynarUser.verified_addresses?.eth_addresses || [],
+        verifications: neynarUser.verifications || [],
+        custody_address: neynarUser.custody_address,
+        allAddressesChecked: uniqueAddresses,
+        note: 'If your wallet holding $smolemaru is not in this list, verify it on Farcaster by connecting it to your account',
+      })
+      
       if (!hasEnoughTokens) {
         return NextResponse.json({
           score,
@@ -355,6 +364,7 @@ export async function GET(request: NextRequest) {
           requiredBalance: requiredBalanceFormatted,
           tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
           addressesChecked: uniqueAddresses,
+          note: 'If your wallet holding $smolemaru is not in the verified addresses list, please verify it on Farcaster by connecting it to your account',
         })
       }
       

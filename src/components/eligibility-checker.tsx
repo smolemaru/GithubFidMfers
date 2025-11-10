@@ -108,7 +108,13 @@ export function EligibilityChecker() {
           )}
         </div>
         
-        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
+          <div>
+            <div className="text-sm text-foreground/60 mb-1">Neynar Score</div>
+            <div className="text-lg font-bold">
+              <span className="text-primary">{eligibility.score.toFixed(2)}</span>
+            </div>
+          </div>
           <div>
             <div className="text-sm text-foreground/60 mb-1">Pro Badge</div>
             <div className="text-lg font-bold">
