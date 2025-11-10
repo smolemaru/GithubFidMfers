@@ -28,6 +28,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   
   // Get eligibility to determine price
+  // Share the same query key with EligibilityChecker to avoid duplicate calls
   const { data: eligibility } = useQuery({
     queryKey: ['eligibility'],
     queryFn: async () => {
@@ -99,6 +100,12 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
       }
     },
     retry: false,
+    // Share cache with EligibilityChecker - check once, cache for 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   })
   
   const mintPrice = eligibility?.mintPrice || '0.99'
