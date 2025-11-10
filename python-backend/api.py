@@ -29,7 +29,6 @@ app.add_middleware(
 # Configuration
 NEYNAR_API_KEY = os.getenv("NEYNAR_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-UPLOAD_ENDPOINT = os.getenv("UPLOAD_ENDPOINT")  # Your image upload endpoint
 
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
