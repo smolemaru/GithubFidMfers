@@ -313,7 +313,7 @@ export async function GET(request: NextRequest) {
           tokenBalance: tokenBalanceFormatted,
           requiredBalance: requiredBalanceFormatted,
           tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
-          userAddress: userAddress,
+          addressesChecked: uniqueAddresses,
         })
       }
       
