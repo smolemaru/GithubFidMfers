@@ -76,6 +76,10 @@ export async function POST(request: NextRequest) {
 
     // Call Python backend to generate image
     try {
+      if (!env.PYTHON_BACKEND_URL) {
+        throw new Error('Python backend URL not configured')
+      }
+
       const pythonResponse = await fetch(`${env.PYTHON_BACKEND_URL}/generate`, {
         method: 'POST',
         headers: {
@@ -92,23 +96,43 @@ export async function POST(request: NextRequest) {
       })
 
       if (!pythonResponse.ok) {
-        throw new Error('Python backend generation failed')
+        const errorText = await pythonResponse.text()
+        console.error('Python backend error:', errorText)
+        throw new Error(`Python backend generation failed: ${errorText}`)
       }
 
       const pythonData = await pythonResponse.json()
+
+      if (!pythonData.imageBase64) {
+        throw new Error('No image data received from Python backend')
+      }
+
+      // Convert base64 to buffer
+      const imageBuffer = Buffer.from(pythonData.imageBase64, 'base64')
+
+      // Upload to Pinata
+      const { uploadImageToIPFS, ipfsToHttp } = await import('@/lib/ipfs')
+      const ipfsUri = await uploadImageToIPFS(
+        imageBuffer,
+        `fidmfer-${generation.id}.png`
+      )
+
+      // Get HTTP URL for display
+      const imageUrl = ipfsToHttp(ipfsUri)
 
       // Update generation with image URL
       await db.generation.update({
         where: { id: generation.id },
         data: {
           status: 'COMPLETED',
-          imageUrl: pythonData.imageUrl,
+          imageUrl: imageUrl,
+          ipfsImageUri: ipfsUri,
         },
       })
 
       return NextResponse.json({
         id: generation.id,
-        imageUrl: pythonData.imageUrl,
+        imageUrl: imageUrl,
         status: 'COMPLETED',
       })
     } catch (pythonError) {
@@ -124,7 +148,7 @@ export async function POST(request: NextRequest) {
         id: generation.id,
         imageUrl: '',
         status: 'FAILED',
-        message: 'Generation failed. Please try again.',
+        message: pythonError instanceof Error ? pythonError.message : 'Generation failed. Please try again.',
       })
     }
   } catch (error) {

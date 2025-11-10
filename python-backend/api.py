@@ -211,29 +211,13 @@ def remix_pfp(
         raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
 
 
-def upload_image(image: Image.Image, generation_id: str) -> str:
-    """Upload image to storage and return URL."""
-    # Convert to bytes
+def image_to_base64(image: Image.Image) -> str:
+    """Convert image to base64 string."""
     img_byte_arr = io.BytesIO()
     image.save(img_byte_arr, format='PNG')
     img_byte_arr.seek(0)
-    
-    # Upload to your storage (implement based on your setup)
-    # For example, AWS S3, Cloudflare R2, or similar
-    # This is a placeholder
-    if UPLOAD_ENDPOINT:
-        response = requests.post(
-            UPLOAD_ENDPOINT,
-            files={'file': (f'{generation_id}.png', img_byte_arr, 'image/png')}
-        )
-        response.raise_for_status()
-        return response.json()['url']
-    else:
-        # Fallback: save locally for development
-        output_path = f"outputs/{generation_id}.png"
-        os.makedirs("outputs", exist_ok=True)
-        image.save(output_path)
-        return f"/outputs/{generation_id}.png"
+    img_base64 = base64.b64encode(img_byte_arr.getvalue()).decode('utf-8')
+    return img_base64
 
 
 @app.post("/generate")
@@ -259,12 +243,12 @@ async def generate(request: GenerationRequest):
             power_badge=request.power_badge,
         )
         
-        # Upload image
-        image_url = upload_image(remixed_image, request.generation_id)
+        # Convert image to base64
+        image_base64 = image_to_base64(remixed_image)
         
         return {
             "success": True,
-            "imageUrl": image_url,
+            "imageBase64": image_base64,
             "generationId": request.generation_id,
         }
         
