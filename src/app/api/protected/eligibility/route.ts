@@ -396,6 +396,7 @@ export async function GET(request: NextRequest) {
       requiredBalance: formatUnits(requiredBalanceWithDecimals, Number(tokenDecimals)),
       tokenAddress: SMOLEMARU_TOKEN_ADDRESS,
       addressesChecked: uniqueAddresses,
+      note: 'If your wallet holding $smolemaru is not in the verified addresses list, please verify it on Farcaster by connecting it to your account',
     })
   } catch (error) {
     console.error('Error checking eligibility:', error)
