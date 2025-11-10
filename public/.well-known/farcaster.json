@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "FID MFERS",
+    "iconUrl": "https://github-fid-mfers.vercel.app/icon.png",
+    "homeUrl": "https://github-fid-mfers.vercel.app",
+    "imageUrl": "https://github-fid-mfers.vercel.app/og-image.png",
+    "buttonTitle": "Mint Your FID MFER",
+    "splashImageUrl": "https://github-fid-mfers.vercel.app/splash.png",
+    "splashBackgroundColor": "#0a0a0f"
+  }
+}
+

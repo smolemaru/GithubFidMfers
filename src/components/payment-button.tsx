@@ -89,7 +89,7 @@ export function PaymentButton({ onSuccess }: PaymentButtonProps) {
       }) as string
 
       // Record payment on backend
-      const { token } = await (await import('@/lib/sdk-mock')).sdk.quickAuth.getToken()
+      const { token } = await (await import('@/lib/sdk')).sdk.quickAuth.getToken()
       
       const response = await fetch('/api/protected/payment', {
         method: 'POST',

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
-import { sdk } from '@/lib/sdk-mock' // Mock SDK for development
+import { sdk } from '@/lib/sdk'
 import { Loader2, RefreshCw, Crown, X } from 'lucide-react'
 import { toast } from '@/components/ui/toaster'
 

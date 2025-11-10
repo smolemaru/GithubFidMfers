@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Heart, Crown } from 'lucide-react'
-import { sdk } from '@/lib/sdk-mock' // Mock SDK for development
+import { sdk } from '@/lib/sdk'
 import { toast } from '@/components/ui/toaster'
 
 interface Generation {

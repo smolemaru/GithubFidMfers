@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { sdk } from '@/lib/sdk-mock' // Mock SDK for development
+import { sdk } from '@/lib/sdk'
 import { useQuery } from '@tanstack/react-query'
 import { AdminGenerationList } from '@/components/admin/generation-list'
 import { Loader2, AlertCircle } from 'lucide-react'

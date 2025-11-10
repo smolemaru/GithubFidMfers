@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { sdk } from '@/lib/sdk-mock' // Mock SDK for development
+import { sdk } from '@/lib/sdk'
 import { Hero } from '@/components/hero'
 import { GenerateSection } from '@/components/generate-section'
 import { AlphaDisclaimer } from '@/components/alpha-disclaimer'

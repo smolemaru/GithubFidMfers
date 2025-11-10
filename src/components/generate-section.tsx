@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { sdk } from '@/lib/sdk-mock' // Mock SDK for development
+import { sdk } from '@/lib/sdk'
 import { Loader2, Sparkles } from 'lucide-react'
 import { PaymentButton } from './payment-button'
 import { GenerationResult } from './generation-result'

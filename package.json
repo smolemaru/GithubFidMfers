@@ -18,6 +18,7 @@
     "contracts:deploy": "cd contracts && forge script script/Deploy.s.sol --rpc-url $BASE_RPC_URL --broadcast"
   },
   "dependencies": {
+    "@farcaster/miniapp-sdk": "^0.2.1",
     "@neynar/nodejs-sdk": "^1.54.0",
     "@neynar/react": "^1.2.0",
     "@pigment-css/react": "^0.0.24",
