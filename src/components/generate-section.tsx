@@ -164,9 +164,6 @@ export function GenerateSection() {
                 <p className="text-foreground/70 mb-1">
                   Price varies by Neynar score and verification status
                 </p>
-                <p className="text-sm text-foreground/50">
-                  Second generation in case you want to try again
-                </p>
               </div>
               <PaymentButton onSuccess={handlePaymentSuccess} />
               

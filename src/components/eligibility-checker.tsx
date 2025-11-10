@@ -170,13 +170,8 @@ export function EligibilityChecker() {
               )}
             </div>
             <div className="text-xs text-foreground/50 mt-1">
-              HOLD 200.000 $smolemaru
+              HODL 200.000
             </div>
-            {eligibility.requiredBalance && (
-              <div className="text-xs text-foreground/50">
-                Required: {eligibility.requiredBalance}
-              </div>
-            )}
           </div>
         </div>
         

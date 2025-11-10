@@ -36,10 +36,21 @@ export function Hero() {
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-foreground/70 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Turn your Farcaster profile into a{' '}
-            <span className="text-primary font-semibold">stunning 3DMFER</span>.
-          </p>
+            <p className="text-xl md:text-2xl text-foreground/70 mb-6 max-w-2xl mx-auto leading-relaxed">
+              Turn your Farcaster profile into a{' '}
+              <span className="text-primary font-semibold">stunning 3DMFER</span>.
+            </p>
+            
+            <div className="mb-12 max-w-2xl mx-auto">
+              <img 
+                src="/original.avif" 
+                alt="FIDMfer sneak peek" 
+                className="w-full rounded-2xl border border-white/10 shadow-2xl mb-2"
+              />
+              <p className="text-sm text-foreground/60 text-center">
+                - more sneak peaks on my page
+              </p>
+            </div>
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
