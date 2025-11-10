@@ -214,10 +214,13 @@ export async function GET(request: NextRequest) {
       })
     }
     
+    console.log('✅ Starting token balance check for', uniqueAddresses.length, 'Base ETH wallet(s)')
+    console.log('📋 Addresses to check:', uniqueAddresses)
+    
     try {
       // Create public client for Base network
       // Use Alchemy or other RPC provider for Base
-      console.log('🔧 Setting up RPC connection...')
+      console.log('🔧 Setting up RPC connection for Base network...')
       console.log('Environment check:', {
         hasBASE_RPC_URL: !!env.BASE_RPC_URL,
         hasALCHEMY_API_KEY: !!env.ALCHEMY_API_KEY,
