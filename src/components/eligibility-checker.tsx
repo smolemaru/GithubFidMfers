@@ -3,7 +3,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Loader2, CheckCircle2, XCircle, AlertCircle } from 'lucide-react'
 import { sdk } from '@/lib/sdk'
-import { env } from '@/env'
 
 interface EligibilityResult {
   score: number
@@ -18,132 +17,22 @@ export function EligibilityChecker() {
     queryFn: async (): Promise<EligibilityResult> => {
       const { token } = await sdk.quickAuth.getToken()
       
-      // Fetch user profile to get FID
-      const profileResponse = await fetch('/api/protected/me', {
+      // Use server-side API route to check eligibility (has access to NEYNAR_API_KEY)
+      const eligibilityResponse = await fetch('/api/protected/eligibility', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       
-      if (!profileResponse.ok) {
-        throw new Error('Failed to fetch profile')
+      if (!eligibilityResponse.ok) {
+        const errorData = await eligibilityResponse.json().catch(() => ({}))
+        const errorMessage = errorData.error || errorData.details || `Failed to check eligibility: ${eligibilityResponse.status}`
+        console.error('Eligibility check error:', errorData)
+        throw new Error(errorMessage)
       }
       
-      const profile = await profileResponse.json()
-      
-      // Check if API key is available
-      if (!env.NEYNAR_API_KEY) {
-        console.error('NEYNAR_API_KEY is not set')
-        throw new Error('Neynar API key not configured. Please set NEYNAR_API_KEY in environment variables.')
-      }
-      
-      // Fetch Neynar user data to get score and verification
-      // Try both header formats - some Neynar endpoints use different formats
-      let neynarResponse
-      let neynarData
-      let neynarUser
-      
-      try {
-        // First try with x-api-key header (recommended format)
-        neynarResponse = await fetch(
-          `https://api.neynar.com/v2/farcaster/user/bulk?fids=${profile.fid}`,
-          {
-            headers: {
-              'x-api-key': env.NEYNAR_API_KEY || '',
-              'x-neynar-experimental': 'true', // Filter spam accounts
-            },
-          }
-        )
-        
-        if (!neynarResponse.ok) {
-          // If that fails, try with api_key header (alternative format)
-          console.warn('x-api-key header failed, trying api_key header...')
-          neynarResponse = await fetch(
-            `https://api.neynar.com/v2/farcaster/user/bulk?fids=${profile.fid}`,
-            {
-              headers: {
-                'api_key': env.NEYNAR_API_KEY || '',
-              },
-            }
-          )
-        }
-        
-        if (!neynarResponse.ok) {
-          const errorText = await neynarResponse.text()
-          console.error('Neynar API error:', neynarResponse.status, errorText)
-          throw new Error(`Failed to fetch Neynar data: ${neynarResponse.status} - ${errorText}`)
-        }
-        
-        neynarData = await neynarResponse.json()
-        neynarUser = neynarData.users?.[0]
-      } catch (fetchError) {
-        console.error('Neynar fetch error:', fetchError)
-        throw new Error(`Failed to fetch Neynar data: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`)
-      }
-      
-      if (!neynarUser) {
-        console.error('Neynar user not found in response:', neynarData)
-        throw new Error('User not found in Neynar response')
-      }
-      
-      // Log all available fields to debug
-      console.log('Neynar user data:', {
-        fid: neynarUser.fid,
-        username: neynarUser.username,
-        power_badge: neynarUser.power_badge,
-        follower_count: neynarUser.follower_count,
-        verified_addresses: neynarUser.verified_addresses,
-        allFields: Object.keys(neynarUser), // Log all available fields
-      })
-      
-      // Get Neynar score - check multiple possible fields
-      // According to Neynar docs, score might be in different fields
-      let score = 0
-      
-      // Try different possible score fields
-      if (neynarUser.neynar_score !== undefined) {
-        score = neynarUser.neynar_score
-      } else if (neynarUser.score !== undefined) {
-        score = neynarUser.score
-      } else if (neynarUser.user_score !== undefined) {
-        score = neynarUser.user_score
-      } else if (neynarUser.quality_score !== undefined) {
-        score = neynarUser.quality_score
-      }
-      
-      // If no score available, calculate a rough estimate based on filtered follower count
-      // Using filtered followers (with experimental flag) gives more accurate estimate
-      if (score === 0 && neynarUser.follower_count) {
-        // Rough estimate based on filtered follower count:
-        // 1000 filtered followers = 0.1 score, 5000 = 0.5, 10000 = 1.0
-        // Filtered followers are more accurate than raw followers
-        score = Math.min(neynarUser.follower_count / 10000, 1.0)
-        console.log('Using fallback score calculation based on filtered followers:', score)
-      }
-      
-      const verified = neynarUser.power_badge || false
-      
-      // Calculate mint price based on score and verification
-      let mintPrice: string
-      let eligible = true
-      
-      if (score >= 1.0 && verified) {
-        mintPrice = '0.35'
-      } else if (score >= 0.5 && score < 1.0) {
-        mintPrice = '0.99'
-      } else if (score < 0.5) {
-        mintPrice = '3.00'
-      } else {
-        // Default to 0.99 if score is exactly 1.0 but not verified
-        mintPrice = '0.99'
-      }
-      
-      return {
-        score,
-        verified,
-        mintPrice,
-        eligible,
-      }
+      const eligibilityData = await eligibilityResponse.json()
+      return eligibilityData as EligibilityResult
     },
     retry: false,
   })
