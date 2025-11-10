@@ -114,11 +114,11 @@ export async function GET(request: NextRequest) {
     // 1. Must have pro subscription/badge (power_badge)
     // 2. Must hold at least 200,000 $smolemaru tokens
     const SMOLEMARU_TOKEN_ADDRESS = '0x19d45c0497de6921d2c7f5800d279123ac36a524' as const
-    const REQUIRED_BALANCE = 200000n // 200,000 tokens (assuming 18 decimals)
-    const TOKEN_DECIMALS = 18n
+    const REQUIRED_BALANCE = BigInt(200000) // 200,000 tokens (assuming 18 decimals)
+    const TOKEN_DECIMALS = BigInt(18)
     
     let eligible = false
-    let tokenBalance = 0n
+    let tokenBalance = BigInt(0)
     let hasProBadge = verified
     let hasEnoughTokens = false
     
@@ -199,7 +199,7 @@ export async function GET(request: NextRequest) {
       }
       
       // Convert required balance to token units (with decimals)
-      const requiredBalanceWithDecimals = REQUIRED_BALANCE * (10n ** tokenDecimals)
+      const requiredBalanceWithDecimals = REQUIRED_BALANCE * (BigInt(10) ** tokenDecimals)
       
       // Check if user has enough tokens
       hasEnoughTokens = tokenBalance >= requiredBalanceWithDecimals
