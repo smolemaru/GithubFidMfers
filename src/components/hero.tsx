@@ -48,7 +48,15 @@ export function Hero() {
                 className="w-full rounded-2xl border border-white/10 shadow-2xl mb-2"
               />
               <p className="text-sm text-foreground/60 text-center">
-                - more sneak peaks on my page
+                - more sneak peaks on my{' '}
+                <a
+                  href="https://farcaster.xyz/smolemaru"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary/80 underline transition-colors"
+                >
+                  page
+                </a>
               </p>
             </div>
           
