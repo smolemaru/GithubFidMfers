@@ -170,9 +170,9 @@ export function EligibilityChecker() {
             </div>
             <div className="text-lg font-bold">
               {eligibility.hasEnoughTokens ? (
-                <span className="text-green-400">✓ {eligibility.tokenBalance || '0'}</span>
+                <span className="text-green-400">✓ {eligibility.tokenBalance ? Math.floor(parseFloat(eligibility.tokenBalance)).toLocaleString() : '0'}</span>
               ) : (
-                <span className="text-red-400">✗ {eligibility.tokenBalance || '0'}</span>
+                <span className="text-red-400">✗ {eligibility.tokenBalance ? Math.floor(parseFloat(eligibility.tokenBalance)).toLocaleString() : '0'}</span>
               )}
             </div>
             <div className="text-xs text-foreground/50 mt-1">
@@ -196,7 +196,7 @@ export function EligibilityChecker() {
         {eligibility.eligible && (
           <div className="pt-4 border-t border-white/10">
             <div className="text-sm text-green-400 font-semibold">
-              ✓ Eligible - Pro badge and 200,000+ $smolemaru required
+              ✓ Eligible - join /fidmfers channel click SHARE below and wait for mint!
             </div>
           </div>
         )}

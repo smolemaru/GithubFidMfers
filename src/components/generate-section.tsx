@@ -141,11 +141,20 @@ export function GenerateSection() {
           className="glass p-8 rounded-3xl border border-white/5 shadow-2xl"
         >
           <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold mb-2">Generate Your FIDMfer</h2>
-              <p className="text-foreground/70">
-                Hello, <span className="text-primary font-semibold">@{userProfile.username}</span>
-              </p>
+            <div className="flex items-center gap-3">
+              <div>
+                <h2 className="text-3xl font-bold mb-2">Generate Your FIDMfer</h2>
+                <p className="text-foreground/70 flex items-center gap-2">
+                  Hello, <span className="text-primary font-semibold">@{userProfile.username}</span>
+                  {userProfile.pfpUrl && (
+                    <img
+                      src={userProfile.pfpUrl}
+                      alt={userProfile.username}
+                      className="w-8 h-8 rounded-full border-2 border-primary/50"
+                    />
+                  )}
+                </p>
+              </div>
             </div>
             {hasPayment && (
               <div className="text-right">
